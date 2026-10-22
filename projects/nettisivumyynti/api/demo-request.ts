@@ -32,7 +32,7 @@ async function buildAndSend(req: DemoRequest, id: string, siteUrl: string): Prom
     });
     await sendDemoEmail(req, `${siteUrl}/demo/${id}`, siteUrl);
     console.log(
-      `[demo ${id}] sent in ${Math.round((Date.now() - started) / 1000)}s, tokens in=${result.inputTokens} out=${result.outputTokens}`,
+      `[demo ${id}] sent in ${Math.round((Date.now() - started) / 1000)}s, tokens in=${result.inputTokens} out=${result.outputTokens}, design searches=${result.searches}`,
     );
   } catch (error) {
     console.error(`[demo ${id}] store or email failed`, error);

@@ -8,15 +8,25 @@ export interface SampleError {
   text?: string;
 }
 
-export type SampleFn = (
-  input: string,
-  options?: {
-    onText?: (u: { text: string; delta: string }) => void;
-    signal?: AbortSignal;
-    modelTier?: "default" | "complex" | "quick";
-    cache?: boolean;
-  },
-) => Promise<{ text: string; truncated: boolean }>;
+export interface SampleTool {
+  name: string;
+  description: string;
+  inputSchema?: { type: "object"; [k: string]: unknown };
+  execute(input: { [name: string]: unknown }, context: { signal: AbortSignal }): unknown;
+}
+
+export interface SampleOptions {
+  onText?: (u: { text: string; delta: string }) => void;
+  signal?: AbortSignal;
+  modelTier?: "default" | "complex" | "quick";
+  cache?: boolean;
+  tools?: SampleTool[];
+}
+
+export type SampleFn = ((input: string, options?: SampleOptions) => Promise<{ text: string; truncated: boolean }>) & {
+  json<T = unknown>(input: string, options?: SampleOptions): Promise<T>;
+  limits(): Promise<{ maxPromptBytes: number; tools?: { maxCount: number } }>;
+};
 
 export interface DownloadsNs {
   save(req: { filename: string; data: string | Blob }): Promise<{ status: string }>;

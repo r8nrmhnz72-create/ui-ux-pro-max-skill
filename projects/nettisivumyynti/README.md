@@ -36,3 +36,13 @@ one-page demo, stores it in private Vercel Blob storage and emails the link with
 When the page is opened as a claude.ai artifact, the form instead builds the demo in the page
 with the artifact `sample` capability (same prompt, `src/lib/demo-prompt.ts`) and shows it in a
 sandboxed frame. Setup steps (in Finnish): `KAYTTOONOTTO.md`. Environment variables: `.env.example`.
+
+### Design knowledge used by the demos
+
+Every demo is designed with the same UI UX Pro Max data and workflow as this repo's skill.
+`npm run build:design-data` exports products (with their reasoning profiles), active styles,
+palettes, font pairings, landing patterns and web UX rules from `src/ui-ux-pro-max/data` into
+`src/lib/design-data.ts`; `src/lib/design-search.ts` is a small BM25 search over it, offered to
+Claude as the `search_design_database` tool (server tool loop, and the artifact `sample` tools in
+preview), together with the skill's condensed workflow and pre-delivery checklist. Re-run the
+export after the CSV data changes.

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { CheckCircle2, Clock, Download, Loader2, Mail, Maximize2, Minimize2, Sparkles, Square } from "lucide-react";
 
 import { getDownloads, getSample, isSampleError, type DownloadsNs, type SampleFn } from "@/lib/claude-runtime";
-import { briefToPrompt, DEMO_SYSTEM_PROMPT, extractHtml } from "@/lib/demo-prompt";
+import type { DesignDomain } from "@/lib/design-search";
 
 import { GradientText } from "./primitives";
 
@@ -17,7 +17,7 @@ type Status =
   | { kind: "done"; email: string }
   | { kind: "error"; message: string }
   // Preview mode (opened as a Claude artifact): the demo is built right here.
-  | { kind: "building"; chars: number }
+  | { kind: "building"; chars: number; searches: number }
   | { kind: "preview"; html: string; company: string };
 
 const SAMPLE_ERRORS: Record<string, string> = {
@@ -108,18 +108,61 @@ export function DemoForm({ prefill = "", prefillKey = 0 }: { prefill?: string; p
     const ctl = new AbortController();
     abortRef.current = ctl;
     setNote("");
-    setStatus({ kind: "building", chars: 0 });
-    const prompt = `${DEMO_SYSTEM_PROMPT}\n\n${briefToPrompt({ company, industry, description })}`;
+    let searches = 0;
+    let chars = 0;
+    const show = () => setStatus({ kind: "building", chars, searches });
+    show();
+    const onText = ({ text: t }: { text: string }) => {
+      chars = t.length;
+      show();
+    };
     try {
-      const { text, truncated } = await fn(prompt, {
-        signal: ctl.signal,
-        modelTier: "default",
-        cache: false,
-        onText: ({ text: t }) => setStatus({ kind: "building", chars: t.length }),
-      });
-      const html = extractHtml(text);
+      // Loaded only in preview mode: the design database is ~460 KB.
+      const [{ briefToPrompt, DEMO_INSTRUCTIONS, extractHtml }, ds] = await Promise.all([
+        import("@/lib/demo-prompt"),
+        import("@/lib/design-search"),
+      ]);
+      const { DESIGN_DOMAINS, DESIGN_TOOL_DESCRIPTION, DESIGN_TOOL_NAME, DESIGN_TOOL_SCHEMA, designContext, runDesignTool } = ds;
+      const brief = briefToPrompt({ company, industry, description });
+      const limits = await fn.limits().catch(() => null);
+      let result: { text: string; truncated: boolean };
+      if (limits?.tools) {
+        // Same design-database tool the server gives Claude.
+        result = await fn(`${DEMO_INSTRUCTIONS}\n\n${brief}`, {
+          signal: ctl.signal,
+          modelTier: "default",
+          onText,
+          tools: [
+            {
+              name: DESIGN_TOOL_NAME,
+              description: DESIGN_TOOL_DESCRIPTION,
+              inputSchema: DESIGN_TOOL_SCHEMA,
+              execute: (input) => {
+                searches++;
+                show();
+                return runDesignTool(input);
+              },
+            },
+          ],
+        });
+      } else {
+        // No tools in this view: pick the searches first, run them here, then write the page.
+        const queries = await fn.json<Partial<Record<DesignDomain, string>>>(
+          `Turn this website brief into English search queries for a design database. Reply with only a JSON object with the keys ${DESIGN_DOMAINS.join(", ")}; each value is 2-5 English keywords (product: the business type; style: a fitting UI style; color: the business type; typography: the mood; landing: the page pattern; ux: one accessibility concern).\n\n${brief}`,
+          { signal: ctl.signal, modelTier: "quick" },
+        );
+        const clean: Partial<Record<DesignDomain, string>> = {};
+        for (const d of DESIGN_DOMAINS) if (typeof queries?.[d] === "string") clean[d] = String(queries[d]).slice(0, 100);
+        searches = Object.keys(clean).length;
+        show();
+        result = await fn(
+          `${DEMO_INSTRUCTIONS}\n\nThe ${DESIGN_TOOL_NAME} tool is not available here; these searches were already run for you. Build the design system from them:\n<design_database_results>\n${designContext(clean)}\n</design_database_results>\n\n${brief}`,
+          { signal: ctl.signal, modelTier: "default", cache: false, onText },
+        );
+      }
+      const html = extractHtml(result.text);
       if (!html) {
-        setStatus({ kind: "error", message: truncated ? "Demosta tuli liian pitkä. Lyhennä toiveita ja yritä uudelleen." : "Demon teko epäonnistui. Yritä uudelleen." });
+        setStatus({ kind: "error", message: result.truncated ? "Demosta tuli liian pitkä. Lyhennä toiveita ja yritä uudelleen." : "Demon teko epäonnistui. Yritä uudelleen." });
         return;
       }
       setStatus({ kind: "preview", html: stripScripts(html), company });
@@ -307,9 +350,11 @@ export function DemoForm({ prefill = "", prefillKey = 0 }: { prefill?: string; p
                 <div role="status" className="flex items-center justify-between gap-3 rounded-xl bg-[var(--nexa-chip)] px-4 py-3 text-sm">
                   <span className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin text-[var(--nexa-blue)]" aria-hidden />
-                    {status.chars === 0
-                      ? "Suunnitellaan demoa... (voi kestää 1–3 min)"
-                      : `Rakennetaan sivua... ${Math.round(status.chars / 1000)} kt valmiina`}
+                    {status.chars > 2000
+                      ? `Rakennetaan sivua... ${Math.round(status.chars / 1000)} kt valmiina`
+                      : status.searches > 0
+                        ? `Haetaan tyyliä, värejä ja fontteja suunnittelutietokannasta (${status.searches} hakua)...`
+                        : "Suunnitellaan demoa... (voi kestää 1–4 min)"}
                   </span>
                   <button
                     type="button"

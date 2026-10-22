@@ -3,7 +3,9 @@
 Kun asiakas täyttää sivun **Ilmainen demosivusto** -lomakkeen, palvelu:
 
 1. tarkistaa tiedot ja roskapostisuojan (piilokenttä + päiväkohtaiset rajat),
-2. pyytää Claudea rakentamaan asiakkaan toiveista yhden sivun demon (n. 1–4 min),
+2. pyytää Claudea rakentamaan asiakkaan toiveista yhden sivun demon (n. 1–4 min). Claude hakee
+   ensin tyylin, värit, fontit ja sivurakenteen UI UX Pro Max -suunnittelutietokannasta ja
+   noudattaa samoja suunnittelusääntöjä kuin tämän repon skill,
 3. tallentaa demon omaan osoitteeseen `sivustosi.fi/demo/<tunnus>`,
 4. lähettää linkin asiakkaalle sähköpostilla ja kopion sinulle.
 
