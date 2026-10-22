@@ -33,4 +33,6 @@ Why `components/ui`: the shadcn CLI installs every component into the folder set
 form, rate-limits it, answers immediately and then (via `waitUntil`) asks Claude to build a
 one-page demo, stores it in private Vercel Blob storage and emails the link with Resend.
 `demo.ts` serves `/demo/<id>` under a sandboxed, script-free Content-Security-Policy.
-Setup steps (in Finnish): `KAYTTOONOTTO.md`. Environment variables: `.env.example`.
+When the page is opened as a claude.ai artifact, the form instead builds the demo in the page
+with the artifact `sample` capability (same prompt, `src/lib/demo-prompt.ts`) and shows it in a
+sandboxed frame. Setup steps (in Finnish): `KAYTTOONOTTO.md`. Environment variables: `.env.example`.
