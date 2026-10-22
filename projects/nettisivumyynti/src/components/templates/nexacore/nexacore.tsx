@@ -1,3 +1,6 @@
+import { useState } from "react";
+
+import { Brief } from "./brief";
 import { Contact } from "./contact";
 import { Faq } from "./faq";
 import { Footer } from "./footer";
@@ -10,6 +13,13 @@ import { Pricing } from "./pricing";
 import { Trusted } from "./trusted";
 
 export default function Nexacore() {
+  const [brief, setBrief] = useState({ text: "", n: 0 });
+
+  function handleBrief(text: string) {
+    setBrief((b) => ({ text, n: b.n + 1 }));
+    document.getElementById("yhteys")?.scrollIntoView({ behavior: "smooth" });
+  }
+
   return (
     <div
       className="nexacore relative min-h-svh bg-[var(--background)] text-[var(--foreground)] antialiased"
@@ -27,7 +37,8 @@ export default function Nexacore() {
         <Precision />
         <Pricing />
         <Faq />
-        <Contact />
+        <Brief onSubmit={handleBrief} />
+        <Contact prefill={brief.text} prefillKey={brief.n} />
       </main>
       <Footer />
     </div>

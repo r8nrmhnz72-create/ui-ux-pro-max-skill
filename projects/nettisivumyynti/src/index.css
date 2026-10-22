@@ -8,6 +8,20 @@
   --color-background: var(--bg-0);
   --color-foreground: var(--text-100);
 
+  /* shadcn/ui tokens used by components/ui (button, textarea) */
+  --color-primary: var(--text-100);
+  --color-primary-foreground: var(--bg-0);
+  --color-secondary: var(--bg-200);
+  --color-secondary-foreground: var(--text-100);
+  --color-accent: var(--bg-200);
+  --color-accent-foreground: var(--text-100);
+  --color-muted: var(--bg-100);
+  --color-muted-foreground: var(--text-300);
+  --color-destructive: #dc2626;
+  --color-destructive-foreground: #fafafa;
+  --color-input: var(--bg-300);
+  --color-ring: var(--text-300);
+
   --animate-fade-slide-in-1: fadeSlideIn 0.8s ease-out 0.1s both;
   --animate-fade-slide-in-2: fadeSlideIn 0.8s ease-out 0.25s both;
   --animate-fade-slide-in-3: fadeSlideIn 0.8s ease-out 0.4s both;

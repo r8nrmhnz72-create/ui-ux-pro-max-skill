@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { CheckCircle2, Mail, Phone } from "lucide-react";
 
 import { GradientText } from "./primitives";
@@ -8,8 +8,23 @@ import { GradientText } from "./primitives";
 const field =
   "mt-2 w-full rounded-xl bg-white px-4 py-3 text-base text-[var(--nexa-navy)] ring-1 ring-[var(--border)] placeholder:text-[var(--nexa-lavender)] focus:outline-none focus:ring-2 focus:ring-[var(--nexa-blue)]";
 
-export function Contact() {
+export function Contact({
+  prefill = "",
+  prefillKey = 0,
+}: {
+  /** Message handed over from the "Kuvaile sivustosi" section. */
+  prefill?: string;
+  /** Changes on every hand-over, so the same text can be sent twice. */
+  prefillKey?: number;
+}) {
   const [sent, setSent] = useState(false);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (!prefillKey) return;
+    setMessage(prefill);
+    setSent(false);
+  }, [prefill, prefillKey]);
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -83,7 +98,7 @@ export function Contact() {
               </label>
               <label htmlFor="nc-msg" className="text-sm font-medium">
                 Viesti
-                <textarea id="nc-msg" name="message" rows={4} className={field} placeholder="Kerro yrityksestäsi ja millaisen sivuston haluat." />
+                <textarea id="nc-msg" name="message" rows={4} value={message} onChange={(e) => setMessage(e.target.value)} className={field} placeholder="Kerro yrityksestäsi ja millaisen sivuston haluat." />
               </label>
               <button
                 type="submit"
