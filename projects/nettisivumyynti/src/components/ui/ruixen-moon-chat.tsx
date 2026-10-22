@@ -60,7 +60,11 @@ export interface QuickActionItem {
 }
 
 export interface RuixenMoonChatProps {
-  title?: string;
+  title?: ReactNode;
+  /** Small line above the title, e.g. a badge. */
+  eyebrow?: ReactNode;
+  /** Darkens the background photo for contrast. Turn off for backgrounds that are already dark. */
+  overlay?: boolean;
   description?: string;
   placeholder?: string;
   sendLabel?: string;
@@ -98,11 +102,13 @@ export default function RuixenMoonChat({
   onAttach,
   className,
   id,
+  eyebrow,
+  overlay = true,
 }: RuixenMoonChatProps) {
   const [message, setMessage] = useState("");
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
-    minHeight: 48,
-    maxHeight: 150,
+    minHeight: 76,
+    maxHeight: 180,
   });
 
   const canSend = Boolean(onSubmit) && message.trim().length > 0;
@@ -133,12 +139,13 @@ export default function RuixenMoonChat({
       style={{ backgroundImage: `url('${backgroundImageUrl}')` }}
     >
       {/* Keeps text readable on any photo */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-black/40" />
+      {overlay ? <div aria-hidden className="pointer-events-none absolute inset-0 bg-black/40" /> : null}
 
       {/* Centered AI Title */}
       <div className="relative flex-1 w-full flex flex-col items-center justify-center py-12">
         <div className="text-center">
-          <h2 className="text-4xl font-semibold text-white drop-shadow-sm text-balance">
+          {eyebrow ? <div className="mb-5 flex justify-center">{eyebrow}</div> : null}
+          <h2 className="text-4xl md:text-5xl font-semibold tracking-tight text-white drop-shadow-sm text-balance">
             {title}
           </h2>
           <p className="mt-2 text-neutral-200 max-w-xl mx-auto">{description}</p>
@@ -146,7 +153,7 @@ export default function RuixenMoonChat({
       </div>
 
       {/* Input Box Section */}
-      <div className="relative w-full max-w-3xl mb-[12vh] md:mb-[20vh]">
+      <div className="relative w-full max-w-3xl mb-16 md:mb-24">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -176,7 +183,7 @@ export default function RuixenMoonChat({
               "w-full px-4 py-3 resize-none border-none",
               "bg-transparent text-white text-base sm:text-sm",
               "focus-visible:ring-0 focus-visible:ring-offset-0",
-              "placeholder:text-neutral-400 min-h-[48px]"
+              "placeholder:text-neutral-400 min-h-[76px]"
             )}
             style={{ overflow: "hidden" }}
           />

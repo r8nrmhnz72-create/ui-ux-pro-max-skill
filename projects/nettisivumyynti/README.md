@@ -18,7 +18,12 @@ translated to Finnish and extended with pricing, FAQ, contact and footer section
 The earlier dark design built on `ResponsiveHeroBanner` is kept in `src/DarkApp.tsx`;
 render it from `src/App.tsx` to switch back.
 
-Sections: hero (video), services, why us, process, pricing, FAQ, "describe your site" chat box (`RuixenMoonChat`, fills the contact form), contact form, footer.
+Sections: hero (video background, CSS-drawn browser and phone mockups of an example
+client site), services bento grid, portfolio of three example concepts (each button
+pre-fills the demo order), why us, process, pricing with "every package includes",
+FAQ, "describe your site" chat box (`RuixenMoonChat`), demo order form, contact
+form, footer. The example sites are drawn with CSS in
+`src/components/templates/nexacore/site-mockups.tsx`, so they need no images.
 The contact form only shows a thank-you message; connect `handleSubmit` in
 `src/components/templates/nexacore/contact.tsx` to a backend or form service before going live.
 Brand name, clients, prices and contact details are placeholders.

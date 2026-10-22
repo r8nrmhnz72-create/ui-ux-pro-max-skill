@@ -11,7 +11,8 @@ import { Navbar } from "./navbar";
 import { NexacoreStyles } from "./styles";
 import { Precision } from "./precision";
 import { Pricing } from "./pricing";
-import { Trusted } from "./trusted";
+import { Services } from "./services";
+import { Showcase } from "./showcase";
 
 export default function Nexacore() {
   const [brief, setBrief] = useState({ text: "", n: 0 });
@@ -33,7 +34,8 @@ export default function Nexacore() {
       <Navbar />
       <main>
         <Hero />
-        <Trusted />
+        <Services />
+        <Showcase onPick={handleBrief} />
         <Freedom />
         <Precision />
         <Pricing />

@@ -1,9 +1,19 @@
-import { Globe, LayoutTemplate, PenLine, RefreshCw, Search, ShoppingBag, CalendarCheck, Utensils } from "lucide-react";
+import { CalendarCheck, Globe, LayoutTemplate, PenLine, RefreshCw, Search, ShoppingBag, Sparkles, Utensils } from "lucide-react";
 
 import RuixenMoonChat, { type QuickActionItem } from "@/components/ui/ruixen-moon-chat";
 
-const BRIEF_BG =
-  "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=2000&q=80";
+// Navy glow and grid in the site's own palette (an inline SVG, so it needs no network).
+const BRIEF_ART = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+  "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900' preserveAspectRatio='xMidYMid slice'>" +
+    "<defs>" +
+    "<radialGradient id='a' cx='.18' cy='.12' r='.6'><stop offset='0' stop-color='#1c4eff' stop-opacity='.55'/><stop offset='1' stop-color='#1c4eff' stop-opacity='0'/></radialGradient>" +
+    "<radialGradient id='b' cx='.88' cy='.55' r='.55'><stop offset='0' stop-color='#ac24ff' stop-opacity='.5'/><stop offset='1' stop-color='#ac24ff' stop-opacity='0'/></radialGradient>" +
+    "<radialGradient id='c' cx='.5' cy='1.05' r='.5'><stop offset='0' stop-color='#fe881b' stop-opacity='.3'/><stop offset='1' stop-color='#fe881b' stop-opacity='0'/></radialGradient>" +
+    "<pattern id='g' width='56' height='56' patternUnits='userSpaceOnUse'><path d='M56 0H0V56' fill='none' stroke='#ffffff' stroke-opacity='.05'/></pattern>" +
+    "</defs>" +
+    "<rect width='1600' height='900' fill='#0b0526'/><rect width='1600' height='900' fill='url(#a)'/><rect width='1600' height='900' fill='url(#b)'/><rect width='1600' height='900' fill='url(#c)'/><rect width='1600' height='900' fill='url(#g)'/>" +
+    "</svg>",
+)}`;
 
 const ACTIONS: QuickActionItem[] = [
   { icon: <LayoutTemplate className="w-4 h-4" />, label: "Kotisivu", prompt: "Tarvitsen yrityksellemme selkeät kotisivut, joista näkee palvelut ja yhteystiedot." },
@@ -20,7 +30,7 @@ export function Brief({ onSubmit }: { onSubmit: (message: string) => void }) {
   return (
     <section
       aria-label="Kuvaile sivustosi"
-      className="scroll-mt-24"
+      className=""
       style={{
         // Shown if the photo can't load.
         backgroundColor: "#0b0526",
@@ -31,8 +41,19 @@ export function Brief({ onSubmit }: { onSubmit: (message: string) => void }) {
       <RuixenMoonChat
         id="kuvaile"
         className="h-auto min-h-[640px] md:min-h-[720px]"
-        backgroundImageUrl={BRIEF_BG}
-        title="Kuvaile unelmiesi sivusto"
+        backgroundImageUrl={BRIEF_ART}
+        overlay={false}
+        eyebrow={
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/[0.07] px-3.5 py-1.5 text-sm text-white/85 ring-1 ring-white/15">
+            <Sparkles className="size-4 text-[var(--nexa-accent)]" aria-hidden />
+            Ilmainen demo · valmis minuuteissa
+          </span>
+        }
+        title={
+          <>
+            Kuvaile <span className="nexa-serif nexa-grad-text">unelmiesi sivusto.</span>
+          </>
+        }
         description="Kerro omin sanoin, mitä tarvitset, tai valitse valmis aihe. Teemme siitä ilmaisen demosivuston ja lähetämme sen sähköpostiisi."
         placeholder="Esim. Parturiliike Tampereella, tarvitsemme sivut ja ajanvarauksen..."
         sendLabel="Jatka demotilaukseen"

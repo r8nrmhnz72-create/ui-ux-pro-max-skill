@@ -1,8 +1,8 @@
-import type { ReactNode } from "react";
 import { Check, X } from "lucide-react";
 
-import { GradientText } from "./primitives";
 import { HlsVideo } from "./hls-video";
+import { BrandMark } from "./primitives";
+import { SectionHead } from "./section-head";
 
 const FREEDOM_HLS =
   "https://stream.mux.com/bnYL6x5cAX6WiJv2pOKpITehZd3NVdXpj3ylJFpX5Lk.m3u8";
@@ -23,144 +23,72 @@ const POSITIVES = [
   "Selkeät yhteydenottopolut, jotka tuovat tarjouspyyntöjä",
 ];
 
-function ControlGlyph() {
+function Orb() {
   return (
-    <svg
-      width="19"
-      height="18"
-      viewBox="0 0 17 16"
-      fill="none"
-      aria-hidden
-      className="shrink-0"
-    >
-      <path
-        d="M8.5 14C8.5 14 1.5 9.8 1.5 5.4C1.5 3.2 3.2 1.8 5 1.8C6.5 1.8 7.8 2.8 8.5 4C9.2 2.8 10.5 1.8 12 1.8C13.8 1.8 15.5 3.2 15.5 5.4C15.5 9.8 8.5 14 8.5 14Z"
-        fill="rgb(200, 111, 255)"
+    <div className="relative size-[180px] shrink-0 sm:size-[220px] lg:size-[260px]">
+      <div
+        aria-hidden
+        className="nexa-orb-spin absolute -inset-3 rounded-full opacity-60 blur-2xl"
+        style={{ background: "conic-gradient(from 0deg, #1c4eff, #ac24ff, #fe881b, #2ba7ff, #1c4eff)" }}
       />
-    </svg>
-  );
-}
-
-function PointRow({
-  children,
-  positive,
-}: {
-  children: ReactNode;
-  positive?: boolean;
-}) {
-  return (
-    <div
-      className="nexa-soft-shadow flex items-center gap-3 rounded-[18px] bg-white"
-      style={{ padding: "clamp(12px, 0.97vw, 16px) clamp(14px, 1.25vw, 20px)" }}
-    >
-      <span
-        className="flex shrink-0 items-center justify-center"
-        style={{
-          width: "clamp(16px, 1.25vw, 20px)",
-          height: "clamp(16px, 1.25vw, 20px)",
-        }}
+      <div
+        className="absolute inset-0 overflow-hidden rounded-full ring-1 ring-white/60"
+        style={{ background: "radial-gradient(circle at 30% 28%, #2ba7ff, #ac24ff 55%, #fe881b 100%)" }}
       >
-        {positive ? (
-          <Check
-            className="size-full text-[var(--nexa-blue)]"
-            strokeWidth={2.5}
-          />
-        ) : (
-          <X
-            className="size-full text-[var(--nexa-lavender-3)]"
-            strokeWidth={2.5}
-          />
-        )}
-      </span>
-      <span
-        className={
-          positive ? "text-[var(--nexa-navy)]" : "text-[var(--nexa-lavender-3)]"
-        }
-        style={{ fontSize: "clamp(13px, 1.15vw, 17px)" }}
-      >
-        {children}
-      </span>
+        {/* The mark shows when the video is unavailable; the video paints over it. */}
+        <div aria-hidden className="absolute inset-0 grid place-items-center">
+          <span className="grid size-16 place-items-center rounded-full bg-white shadow-lg sm:size-20">
+            <BrandMark style={{ width: 34, height: 34 }} />
+          </span>
+        </div>
+        <HlsVideo src={FREEDOM_HLS} />
+      </div>
     </div>
   );
 }
 
 export function Freedom() {
   return (
-    <section
-      id="method"
-      data-slot="freedom"
-      className="flex flex-col items-center bg-white"
-      style={{
-        padding: "clamp(48px, 6vw, 80px) clamp(16px, 3vw, 40px)",
-        gap: 36,
-      }}
-    >
-      <div className="flex flex-col items-center gap-9 text-center">
-        <span
-          className="inline-flex items-center gap-2 rounded-full bg-[var(--nexa-chip)] font-medium text-[var(--nexa-navy)]"
-          style={{ padding: "clamp(8px, 0.9vw, 14px) clamp(14px, 1.25vw, 20px)", fontSize: 18 }}
-        >
-          <ControlGlyph />
-          Miksi Sivuseppä
-        </span>
-        <h2
-          className="font-medium text-[var(--nexa-navy)] text-balance"
-          style={{ fontSize: "clamp(32px, 4vw, 56px)", lineHeight: 1.15 }}
-        >
-          Lopeta sivuston kanssa säätäminen.
-          <br />
-          <GradientText
-            className="inline-block"
-            style={{ paddingBottom: "0.3vw" }}
-          >
-            Anna sen myydä puolestasi.
-          </GradientText>
-        </h2>
-      </div>
+    <section id="method" className="bg-white px-4 py-24 sm:px-6 lg:py-32">
+      <div className="mx-auto max-w-[1200px]">
+        <SectionHead chip="Miksi Sivuseppä" title="Lopeta sivuston kanssa säätäminen." highlight="Anna sen myydä puolestasi." breakBeforeHighlight />
 
-      <div
-        className="flex w-full flex-col items-center lg:grid lg:items-start"
-        style={{
-          gridTemplateColumns: "26vw 1fr 26vw",
-          columnGap: 36,
-          rowGap: 24,
-          padding: "0 clamp(0px, 2.92vw, 40px)",
-        }}
-      >
-        <div
-          className="order-2 flex w-full flex-col lg:order-none"
-          style={{ gap: 12 }}
-        >
-          {NEGATIVES.map((text) => (
-            <PointRow key={text}>{text}</PointRow>
-          ))}
-        </div>
-
-        <div className="order-first flex w-full justify-center lg:order-none">
-          <div
-            className="relative"
-            style={{
-              borderRadius: "50%",
-              overflow: "hidden",
-              background:
-                "radial-gradient(circle at 30% 30%, rgb(43,167,255), rgb(172,36,255) 55%, rgb(254,136,27))",
-              width: "clamp(200px, 22vw, 400px)",
-              height: "clamp(200px, 22vw, 400px)",
-            }}
-          >
-            <HlsVideo src={FREEDOM_HLS} />
+        <div className="mt-14 grid items-center gap-6 lg:grid-cols-[1fr_auto_1fr] lg:gap-10">
+          <div className="order-2 rounded-[28px] bg-[var(--nexa-surface)] p-4 sm:p-6 lg:order-none">
+            <p className="mb-4 flex items-center gap-2 px-1 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--nexa-muted)]">
+              <X className="size-4" aria-hidden strokeWidth={2.5} />
+              Ilman ammattilaista
+            </p>
+            <ul className="space-y-2.5">
+              {NEGATIVES.map((text) => (
+                <li key={text} className="flex items-start gap-3 rounded-2xl bg-white/70 px-4 py-3.5 text-[15px] text-[var(--nexa-muted)] ring-1 ring-[var(--border)]">
+                  <X className="mt-0.5 size-4 shrink-0" aria-hidden strokeWidth={2.5} />
+                  {text}
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
 
-        <div
-          className="order-3 flex w-full flex-col lg:order-none"
-          style={{ gap: 12 }}
-        >
-          {POSITIVES.map((text) => (
-            <PointRow key={text} positive>
-              {text}
-            </PointRow>
-          ))}
+          <div className="order-first flex justify-center lg:order-none">
+            <Orb />
+          </div>
+
+          <div className="nexa-grad-border-light nexa-soft-shadow order-3 rounded-[28px] p-4 sm:p-6 lg:order-none">
+            <p className="mb-4 flex items-center gap-2 px-1 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--nexa-blue)]">
+              <Check className="size-4" aria-hidden strokeWidth={2.5} />
+              Sivusepän kanssa
+            </p>
+            <ul className="space-y-2.5">
+              {POSITIVES.map((text) => (
+                <li key={text} className="flex items-start gap-3 rounded-2xl bg-[var(--nexa-surface)] px-4 py-3.5 text-[15px] font-medium text-[var(--nexa-navy)]">
+                  <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-[var(--nexa-blue)] text-white">
+                    <Check className="size-3" aria-hidden strokeWidth={3} />
+                  </span>
+                  {text}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </section>

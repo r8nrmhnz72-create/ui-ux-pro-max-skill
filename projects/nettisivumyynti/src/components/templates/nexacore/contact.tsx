@@ -6,7 +6,7 @@ import { CheckCircle2, Mail, Phone } from "lucide-react";
 import { GradientText } from "./primitives";
 
 const field =
-  "mt-2 w-full rounded-xl bg-white px-4 py-3 text-base text-[var(--nexa-navy)] ring-1 ring-[var(--border)] placeholder:text-[var(--nexa-lavender)] focus:outline-none focus:ring-2 focus:ring-[var(--nexa-blue)]";
+  "mt-2 w-full rounded-xl bg-white px-4 py-3 text-base text-[var(--nexa-navy)] ring-1 ring-[var(--border)] placeholder:text-[var(--nexa-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--nexa-blue)]";
 
 export function Contact({
   prefill = "",
@@ -35,10 +35,10 @@ export function Contact({
   return (
     <section
       id="yhteys"
-      className="scroll-mt-24 bg-white"
+      className="bg-white"
       style={{ padding: "clamp(64px, 8vw, 120px) clamp(16px, 4vw, 40px)" }}
     >
-      <div className="relative mx-auto grid max-w-[1200px] gap-10 overflow-hidden rounded-[36px] bg-[var(--nexa-card-dark)] p-8 text-white sm:p-12 lg:grid-cols-2">
+      <div className="relative mx-auto grid max-w-[1200px] gap-10 overflow-hidden rounded-[36px] bg-[var(--nexa-ink)] p-8 text-white sm:p-12 lg:grid-cols-2">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0"
@@ -48,7 +48,7 @@ export function Contact({
           }}
         />
         <div className="relative">
-          <h2 className="font-medium text-balance" style={{ fontSize: "clamp(30px, 3.6vw, 48px)", lineHeight: 1.15 }}>
+          <h2 className="font-semibold tracking-[-0.03em] text-balance" style={{ fontSize: "clamp(30px, 3.6vw, 48px)", lineHeight: 1.1 }}>
             Pyydä ilmainen tarjous.
             <br />
             <GradientText>Vastaamme päivässä.</GradientText>
@@ -73,7 +73,7 @@ export function Contact({
             <div role="status" className="flex h-full flex-col items-center justify-center py-10 text-center">
               <CheckCircle2 className="h-12 w-12 text-[var(--nexa-blue)]" aria-hidden />
               <h3 className="mt-4 text-xl font-semibold">Kiitos viestistäsi!</h3>
-              <p className="mt-2 text-[var(--nexa-lavender-3)]">Otamme sinuun yhteyttä yhden arkipäivän sisällä.</p>
+              <p className="mt-2 text-[var(--nexa-muted)]">Otamme sinuun yhteyttä yhden arkipäivän sisällä.</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="grid gap-5">

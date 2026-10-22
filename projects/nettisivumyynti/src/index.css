@@ -54,6 +54,8 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* Keeps anchored sections and focused elements clear of the fixed navbar. */
+    scroll-padding-top: 96px;
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
@@ -73,6 +75,7 @@
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Menu, X } from "lucide-react";
+import { ArrowRight, ChevronRight, Menu, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -9,10 +9,10 @@ import { ContactButton, Logo, useScrolled } from "./primitives";
 
 const NAV_LINKS = [
   { label: "Palvelut", href: "#build" },
-  { label: "Miksi me", href: "#method" },
+  { label: "Työnäytteet", href: "#tyot" },
   { label: "Prosessi", href: "#thinking" },
   { label: "Hinnat", href: "#hinnat" },
-  { label: "Ilmainen demo", href: "#kuvaile" },
+  { label: "UKK", href: "#ukk" },
 ];
 
 export function Navbar() {
@@ -68,7 +68,7 @@ export function Navbar() {
 
           <div className="flex items-center gap-2">
             <div className="hidden md:block">
-              <ContactButton label="Pyydä tarjous" href="#yhteys" />
+              <ContactButton label="Ilmainen demo" href="#kuvaile" />
             </div>
             <button
               type="button"
@@ -83,20 +83,29 @@ export function Navbar() {
         </div>
 
         {open ? (
-          <div className="flex flex-col items-center gap-1 border-t border-[var(--border)] px-4 pb-3 pt-2 md:hidden">
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                onClick={() => setOpen(false)}
-                className="w-full rounded-xl py-2 text-center text-sm text-[var(--nexa-navy)] transition-colors nexa-hover"
-              >
-                {link.label}
-              </a>
-            ))}
-            <div className="mt-1 flex w-full items-center gap-2" onClick={() => setOpen(false)}>
-              <ContactButton label="Pyydä tarjous" href="#yhteys" className="flex-1" />
-            </div>
+          <div className="border-t border-[var(--border)] px-2 pb-3 pt-2 md:hidden">
+            <ul>
+              {NAV_LINKS.map((link) => (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    className="flex min-h-12 items-center justify-between rounded-xl px-3 text-base font-medium text-[var(--nexa-navy)] transition-colors nexa-hover"
+                  >
+                    {link.label}
+                    <ChevronRight className="size-4 text-[var(--nexa-muted)]" aria-hidden />
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <a
+              href="#kuvaile"
+              onClick={() => setOpen(false)}
+              className="nexa-grad-a-bg mt-2 flex min-h-12 items-center justify-center gap-2 rounded-xl text-base font-semibold text-white"
+            >
+              Tilaa ilmainen demo
+              <ArrowRight className="size-4" aria-hidden />
+            </a>
           </div>
         ) : null}
       </nav>

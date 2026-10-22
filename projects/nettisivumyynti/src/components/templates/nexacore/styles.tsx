@@ -29,6 +29,84 @@ const NEXACORE_CSS = `
   --nexa-grad-a: linear-gradient(90deg, rgb(28, 78, 255), rgb(172, 36, 255) 50%, rgb(254, 136, 27));
   --nexa-grad-b: linear-gradient(90deg, rgb(43, 167, 255), rgb(202, 69, 255) 50%, rgb(254, 136, 27));
   --nexa-grad-line: linear-gradient(rgb(28, 78, 255), rgb(254, 136, 27) 0%, rgb(172, 36, 255) 25%, rgb(247, 159, 255) 50%, rgb(255, 214, 0) 66%, rgb(254, 136, 27) 84%, rgba(254, 136, 27, 0) 102%);
+  /* Dark sections and light surfaces, both tinted toward the brand violet. */
+  --nexa-ink: #0b0526;
+  --nexa-ink-2: #140a3d;
+  --nexa-surface: #f6f4fb;
+  --nexa-success: #1f9d55;
+  --nexa-focus: #5b82ff;
+  /* Readable muted text on white and on --nexa-surface (5.7:1 and 5.2:1). */
+  --nexa-muted: #6a6189;
+  --nexa-placeholder: #77709a;
+}
+.nexacore .nexa-grad-border-light {
+  border: 1px solid transparent;
+  background: linear-gradient(#fff, #fff) padding-box, var(--nexa-grad-a) border-box;
+}
+.nexacore :focus-visible {
+  outline: 2px solid var(--nexa-focus);
+  outline-offset: 3px;
+}
+.nexacore .nexa-serif {
+  font-family: "Instrument Serif", Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  padding-right: 0.08em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.nexacore .nexa-grid-dark,
+.nexacore .nexa-grid-light {
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%);
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%);
+}
+.nexacore .nexa-grid-dark {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+}
+.nexacore .nexa-grid-light {
+  background-image: linear-gradient(rgba(26, 11, 84, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26, 11, 84, 0.06) 1px, transparent 1px);
+}
+.nexacore .nexa-fade-right {
+  -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent);
+  mask-image: linear-gradient(90deg, #000 85%, transparent);
+}
+.nexacore .nexa-grad-border {
+  border: 1px solid transparent;
+  background: linear-gradient(var(--nexa-ink), var(--nexa-ink)) padding-box, var(--nexa-grad-a) border-box;
+}
+.nexacore .nexa-no-scrollbar {
+  scrollbar-width: none;
+}
+.nexacore .nexa-no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .nexacore .nexa-float {
+    animation: nexa-float 6s ease-in-out infinite;
+  }
+  .nexacore .nexa-float-late {
+    animation: nexa-float 6s ease-in-out 1.5s infinite;
+  }
+  .nexacore .nexa-orb-spin {
+    animation: nexa-spin 14s linear infinite;
+  }
+  .nexacore .nexa-lift {
+    transition: transform 250ms ease, box-shadow 250ms ease;
+  }
+  .nexacore .nexa-lift:hover {
+    transform: translateY(-4px);
+  }
+}
+@keyframes nexa-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes nexa-spin {
+  to { transform: rotate(1turn); }
 }
 .nexacore .nexa-hover:hover {
   background-color: rgba(26, 11, 84, 0.05);
