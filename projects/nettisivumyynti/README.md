@@ -26,3 +26,11 @@ Brand name, clients, prices and contact details are placeholders.
 Why `components/ui`: the shadcn CLI installs every component into the folder set by
 `aliases.ui` in `components.json`. Keeping hand-added components there means future
 `npx shadcn add ...` components land next to them and share the same import paths.
+
+## Automatic demo service
+
+`api/` holds two Vercel functions: `demo-request.ts` validates the "Ilmainen demosivusto"
+form, rate-limits it, answers immediately and then (via `waitUntil`) asks Claude to build a
+one-page demo, stores it in private Vercel Blob storage and emails the link with Resend.
+`demo.ts` serves `/demo/<id>` under a sandboxed, script-free Content-Security-Policy.
+Setup steps (in Finnish): `KAYTTOONOTTO.md`. Environment variables: `.env.example`.

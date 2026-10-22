@@ -59,10 +59,10 @@ export function Hero() {
         <div className="mt-2 flex flex-col items-center gap-3 sm:flex-row">
           <ContactButton label="Pyydä ilmainen tarjous" href="#yhteys" />
           <a
-            href="#hinnat"
+            href="#kuvaile"
             className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-base text-white ring-1 ring-white/30 transition-colors hover:bg-white/10"
           >
-            Katso hinnat
+            Tilaa ilmainen demo
             <ArrowRight className="size-4" aria-hidden />
           </a>
         </div>

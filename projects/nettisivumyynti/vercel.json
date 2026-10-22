@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/demo-request.ts": { "maxDuration": 300 }
+  },
+  "rewrites": [
+    { "source": "/demo/:id", "destination": "/api/demo?id=:id" }
+  ]
+}

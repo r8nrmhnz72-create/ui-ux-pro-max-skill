@@ -33,9 +33,9 @@ export function Brief({ onSubmit }: { onSubmit: (message: string) => void }) {
         className="h-auto min-h-[640px] md:min-h-[720px]"
         backgroundImageUrl={BRIEF_BG}
         title="Kuvaile unelmiesi sivusto"
-        description="Kerro omin sanoin, mitä tarvitset, tai valitse valmis aihe. Teksti siirtyy tarjouspyyntöön, ja vastaamme päivässä."
+        description="Kerro omin sanoin, mitä tarvitset, tai valitse valmis aihe. Teemme siitä ilmaisen demosivuston ja lähetämme sen sähköpostiisi."
         placeholder="Esim. Parturiliike Tampereella, tarvitsemme sivut ja ajanvarauksen..."
-        sendLabel="Siirrä tarjouspyyntöön"
+        sendLabel="Jatka demotilaukseen"
         quickActions={ACTIONS}
         onSubmit={onSubmit}
       />

@@ -12,7 +12,7 @@ const NAV_LINKS = [
   { label: "Miksi me", href: "#method" },
   { label: "Prosessi", href: "#thinking" },
   { label: "Hinnat", href: "#hinnat" },
-  { label: "UKK", href: "#ukk" },
+  { label: "Ilmainen demo", href: "#kuvaile" },
 ];
 
 export function Navbar() {

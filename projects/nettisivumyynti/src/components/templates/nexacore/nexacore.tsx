@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { Brief } from "./brief";
 import { Contact } from "./contact";
+import { DemoForm } from "./demo-form";
 import { Faq } from "./faq";
 import { Footer } from "./footer";
 import { Freedom } from "./freedom";
@@ -17,7 +18,7 @@ export default function Nexacore() {
 
   function handleBrief(text: string) {
     setBrief((b) => ({ text, n: b.n + 1 }));
-    document.getElementById("yhteys")?.scrollIntoView({ behavior: "smooth" });
+    document.getElementById("demo")?.scrollIntoView({ behavior: "smooth" });
   }
 
   return (
@@ -38,7 +39,8 @@ export default function Nexacore() {
         <Pricing />
         <Faq />
         <Brief onSubmit={handleBrief} />
-        <Contact prefill={brief.text} prefillKey={brief.n} />
+        <DemoForm prefill={brief.text} prefillKey={brief.n} />
+        <Contact />
       </main>
       <Footer />
     </div>
