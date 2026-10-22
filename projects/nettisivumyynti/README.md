@@ -12,9 +12,15 @@ npm run dev     # http://localhost:5173
 npm run build
 ```
 
-Sections: hero, services, case studies, pricing, process, FAQ, contact form, footer.
+The page uses the MIT-licensed NexaCore template by Mohammad Shehadeh
+(`src/components/templates/nexacore/`, see its LICENSE and ATTRIBUTION.md),
+translated to Finnish and extended with pricing, FAQ, contact and footer sections.
+The earlier dark design built on `ResponsiveHeroBanner` is kept in `src/DarkApp.tsx`;
+render it from `src/App.tsx` to switch back.
+
+Sections: hero (video), services, why us, process, pricing, FAQ, contact form, footer.
 The contact form only shows a thank-you message; connect `handleSubmit` in
-`src/components/sections/contact.tsx` to a backend or form service before going live.
+`src/components/templates/nexacore/contact.tsx` to a backend or form service before going live.
 Brand name, clients, prices and contact details are placeholders.
 
 Why `components/ui`: the shadcn CLI installs every component into the folder set by
