@@ -14,6 +14,7 @@ import { Pricing } from "./pricing";
 import { Services } from "./services";
 import { Showcase } from "./showcase";
 import { Showreel } from "./showreel";
+import { StackGallery } from "./stack-gallery";
 
 export default function Nexacore() {
   const [brief, setBrief] = useState({ text: "", n: 0 });
@@ -37,6 +38,7 @@ export default function Nexacore() {
         <Hero />
         <Showreel />
         <Services />
+        <StackGallery />
         <Showcase onPick={handleBrief} />
         <Freedom />
         <Precision />

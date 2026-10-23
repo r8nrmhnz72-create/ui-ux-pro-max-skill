@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<title>Sivuseppä – korttikuvat</title>
+<!--
+  Eight example website designs for the "Ei kahta samanlaista" scroll section.
+  render-stack-cards.mjs screenshots each .card at 2x into public/media/stack/.
+  Cards are square; keep the important content inside the middle ~72 %,
+  because the section crops them to portrait or landscape (object-fit: cover).
+-->
+<style>
+@font-face { font-family: PJS; font-weight: 400; src: url("../node_modules/@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: PJS; font-weight: 600; src: url("../node_modules/@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: PJS; font-weight: 700; src: url("../node_modules/@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: PJS; font-weight: 800; src: url("../node_modules/@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-800-normal.woff2") format("woff2"); }
+@font-face { font-family: ISerif; font-style: italic; src: url("../node_modules/@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: ISerif; font-style: normal; src: url("../node_modules/@fontsource/instrument-serif/files/instrument-serif-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: Anton; src: url("../node_modules/@fontsource/anton/files/anton-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: DMSerif; font-style: normal; src: url("../node_modules/@fontsource/dm-serif-display/files/dm-serif-display-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: DMSerif; font-style: italic; src: url("../node_modules/@fontsource/dm-serif-display/files/dm-serif-display-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: Nunito; font-weight: 700; src: url("../node_modules/@fontsource/nunito/files/nunito-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: Nunito; font-weight: 900; src: url("../node_modules/@fontsource/nunito/files/nunito-latin-900-normal.woff2") format("woff2"); }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #888; display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; width: 2160px; font-family: PJS, sans-serif; -webkit-font-smoothing: antialiased; }
+.card { position: relative; width: 500px; height: 500px; overflow: hidden; }
+.abs { position: absolute; }
+.fill { position: absolute; inset: 0; }
+.nav { position: absolute; left: 0; right: 0; top: 0; height: 66px; display: flex; align-items: center; justify-content: space-between; padding: 0 64px; }
+.pill { font-size: 12px; font-weight: 700; padding: 8px 15px; border-radius: 999px; white-space: nowrap; }
+.center { position: absolute; left: 0; right: 0; text-align: center; }
+.tag { font-size: 11px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; }
+.chiprow { position: absolute; left: 0; right: 0; display: flex; justify-content: center; gap: 8px; }
+.chip { font-size: 12px; padding: 7px 12px; border-radius: 999px; white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<!-- 1. Bistro Kaneli: restaurant -->
+<div class="card" id="kaneli" style="background:#1f1510;color:#f6ead9">
+  <div class="fill" style="background:radial-gradient(55% 50% at 50% 70%, rgba(232,163,61,.34), transparent 70%)"></div>
+  <div class="nav"><span style="font-family:ISerif;font-style:italic;font-size:28px">Kaneli</span><span class="pill" style="background:#e8a33d;color:#1f1510">Varaa pöytä</span></div>
+  <div class="center" style="top:84px">
+    <div class="tag" style="color:#e8a33d">Bistro · Tampere</div>
+    <div style="font-family:ISerif;font-size:52px;line-height:.98;margin-top:10px">Makuja, joihin<br><i style="color:#e8a33d">palataan.</i></div>
+  </div>
+  <div class="abs" style="left:150px;top:236px;width:200px;height:200px">
+    <div class="fill" style="border-radius:50%;background:radial-gradient(circle,#efe6d8 0 52%,#e2d5c2 53% 56%,#f6efe4 57% 69%,rgba(0,0,0,.45) 70%,rgba(0,0,0,0) 76%)"></div>
+    <div class="abs" style="left:30%;top:33%;width:40%;height:26%;border-radius:45% 55% 50% 50%/55% 45% 55% 45%;background:repeating-linear-gradient(115deg,#ee8656 0 9px,#f8a77d 9px 12px);box-shadow:inset -6px -5px 12px rgba(120,40,10,.35);transform:rotate(-12deg)"></div>
+    <div class="abs" style="left:24%;top:55%;width:22%;height:16%;border-radius:60% 40% 55% 45%/50% 60% 40% 50%;background:#6f9a45;box-shadow:inset 0 -5px 8px rgba(0,0,0,.25)"></div>
+    <div class="abs" style="left:52%;top:58%;width:20%;height:14%;border-radius:60% 40% 55% 45%/50% 60% 40% 50%;background:#8db35a;box-shadow:inset 0 -5px 8px rgba(0,0,0,.25)"></div>
+    <div class="abs" style="left:58%;top:26%;width:16%;height:12%;border-radius:60% 40% 55% 45%/50% 60% 40% 50%;background:#5f8a3a"></div>
+    <div class="abs" style="left:26%;top:28%;width:12%;height:12%;border-radius:50%;background:radial-gradient(circle,#fbe27a 0 55%,#fff6c9 56% 70%,#f0cf4d 71%)"></div>
+    <div class="abs" style="left:-24px;top:18%;width:7px;height:64%;border-radius:9px;background:linear-gradient(#d8cfc1,#a79e90)"></div>
+    <div class="abs" style="right:-24px;top:18%;width:7px;height:64%;border-radius:9px;background:linear-gradient(#d8cfc1,#a79e90)"></div>
+  </div>
+  <div class="chiprow" style="top:448px"><span class="chip" style="border:1px solid rgba(246,234,217,.2)">Lohi &amp; tilli · 24 €</span><span class="chip" style="border:1px solid rgba(246,234,217,.2)">Kanelipulla · 5 €</span></div>
+</div>
+
+<!-- 2. Virta Rakennus: construction -->
+<div class="card" id="virta" style="background:#eef0f3;color:#101826">
+  <div class="nav"><span style="display:flex;align-items:center;gap:8px;font-weight:800;letter-spacing:.12em;font-size:17px"><span style="display:grid;place-items:center;width:28px;height:28px;background:#f5b301;border-radius:4px">V</span>VIRTA</span><span class="pill" style="background:#101826;color:#fff;border-radius:6px">Pyydä tarjous</span></div>
+  <div class="center" style="top:88px">
+    <div class="tag" style="color:#5b6474">Rakennusliike · Turku</div>
+    <div style="font-family:Anton;font-size:64px;line-height:1.04;text-transform:uppercase;margin-top:10px;letter-spacing:.01em">Rakennamme<br>kestävästi.</div>
+  </div>
+  <div class="abs" style="left:70px;top:258px;width:360px;height:184px;border-radius:14px;overflow:hidden;background:linear-gradient(#dde4ec,#f7f8fa)">
+    <div class="abs" style="right:40px;top:22px;width:40px;height:40px;border-radius:50%;background:#ffd76a"></div>
+    <svg class="fill" viewBox="0 0 360 184" style="width:100%;height:100%"><path d="M262 150 V26 M262 30 H70 M262 30 L300 46 M104 30 V78" stroke="#f5b301" stroke-width="5" fill="none"/><rect x="94" y="78" width="20" height="13" fill="#101826"/></svg>
+    <div class="abs" id="virtaWin1" style="left:36px;bottom:30px;width:150px;height:118px;background:#2a3445;border-radius:4px 4px 0 0;display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:12px"></div>
+    <div class="abs" id="virtaWin2" style="left:200px;bottom:30px;width:110px;height:78px;background:#46546a;border-radius:4px 4px 0 0;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:11px"></div>
+    <div class="abs" style="left:0;right:0;bottom:0;height:30px;background:repeating-linear-gradient(-45deg,#f5b301 0 14px,#101826 14px 28px)"></div>
+  </div>
+</div>
+
+<!-- 3. Studio Lumo: beauty salon -->
+<div class="card" id="lumo" style="background:#fbf1ef;color:#3d1f2b">
+  <div class="abs" style="width:380px;height:380px;right:-110px;top:-150px;border-radius:50%;background:radial-gradient(circle at 40% 40%,#f6c3be,rgba(246,195,190,0) 70%)"></div>
+  <div class="abs" style="width:300px;height:300px;left:-120px;bottom:-140px;border-radius:50%;background:radial-gradient(circle,#f2d7b6,rgba(242,215,182,0) 70%)"></div>
+  <div class="nav"><span style="font-family:ISerif;font-style:italic;font-size:32px">lumo</span><span class="pill" style="background:#c2557a;color:#fff">Varaa aika</span></div>
+  <div class="center" style="top:84px">
+    <div class="tag" style="color:#c2557a">Kauneushoitola · Helsinki</div>
+    <div style="font-family:ISerif;font-style:italic;font-size:58px;line-height:.95;margin-top:10px">Hetki vain<br>sinulle.</div>
+  </div>
+  <div class="abs" style="left:100px;top:246px;width:300px;background:#fff;border-radius:18px;padding:16px;box-shadow:0 22px 44px -22px rgba(61,31,43,.45);font-size:13px">
+    <div style="display:flex;justify-content:space-between"><b>Varaa aika</b><span style="color:#8a6b76;font-size:11px">Marraskuu</span></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;text-align:center">
+      <div style="background:#fbf1ef;border-radius:10px;padding:6px 0"><div style="font-size:9px;opacity:.7">Ma</div><b>12</b></div>
+      <div style="background:#c2557a;color:#fff;border-radius:10px;padding:6px 0"><div style="font-size:9px;opacity:.8">Ti</div><b>13</b></div>
+      <div style="background:#fbf1ef;border-radius:10px;padding:6px 0"><div style="font-size:9px;opacity:.7">Ke</div><b>14</b></div>
+      <div style="background:#fbf1ef;border-radius:10px;padding:6px 0"><div style="font-size:9px;opacity:.7">To</div><b>15</b></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;text-align:center;font-size:11px">
+      <div style="border:1px solid #f1dcd8;border-radius:8px;padding:5px 0">10.00</div>
+      <div style="border:1px solid #c2557a;background:#fdeef2;color:#c2557a;font-weight:700;border-radius:8px;padding:5px 0">11.30</div>
+      <div style="border:1px solid #f1dcd8;border-radius:8px;padding:5px 0">13.00</div>
+    </div>
+    <div style="margin-top:10px;background:#3d1f2b;color:#fff;text-align:center;border-radius:9px;padding:8px;font-size:11px;font-weight:700">Vahvista varaus</div>
+  </div>
+</div>
+
+<!-- 4. Parturi Saksi: barber -->
+<div class="card" id="saksi" style="background:#121212;color:#fff">
+  <div class="fill" style="background:radial-gradient(60% 45% at 50% 35%, rgba(255,255,255,.08), transparent 70%)"></div>
+  <div class="nav"><span style="font-family:Anton;font-size:26px;letter-spacing:.14em">SAKSI</span><span class="pill" style="background:#fff;color:#121212">Varaa aika</span></div>
+  <div class="center" style="top:90px">
+    <div class="tag" style="color:rgba(255,255,255,.6)">Parturi · Kallio</div>
+    <div style="font-family:Anton;font-size:84px;line-height:.9;text-transform:uppercase;margin-top:26px">Terävä<br><span style="color:#e63946">tyyli.</span></div>
+  </div>
+  <div class="abs" style="left:95px;top:308px;width:310px;height:40px;border-radius:20px;background:repeating-linear-gradient(-45deg,#e63946 0 16px,#fff 16px 32px,#1d4ed8 32px 48px,#fff 48px 64px);box-shadow:inset 0 -8px 12px rgba(0,0,0,.25), inset 0 6px 10px rgba(255,255,255,.35)"></div>
+  <div class="abs" style="left:95px;top:370px;width:310px;font-size:15px;color:rgba(255,255,255,.85)">
+    <div style="display:flex;gap:8px;align-items:baseline"><span>Hiustenleikkaus</span><span style="flex:1;border-bottom:1px dotted rgba(255,255,255,.35)"></span><b>32 €</b></div>
+    <div style="display:flex;gap:8px;align-items:baseline;margin-top:10px"><span>Parranajo</span><span style="flex:1;border-bottom:1px dotted rgba(255,255,255,.35)"></span><b>24 €</b></div>
+  </div>
+</div>
+
+<!-- 5. Kahvila Pulla: café -->
+<div class="card" id="pulla" style="background:#f7efe3;color:#5b3a29">
+  <div class="abs" style="width:340px;height:340px;left:80px;top:200px;border-radius:50%;background:radial-gradient(circle,#f3dcc3,rgba(243,220,195,0) 70%)"></div>
+  <div class="nav"><span style="font-family:Nunito;font-weight:900;font-size:28px">pulla.</span><span class="pill" style="background:#5b3a29;color:#f7efe3">Ruokalista</span></div>
+  <div class="center" style="top:86px">
+    <div style="font-family:Nunito;font-weight:900;font-size:44px;line-height:1.02">Hyvää huomenta,<br><span style="color:#e07a3f">kahvi on valmis.</span></div>
+  </div>
+  <svg class="abs" viewBox="0 0 120 60" style="left:190px;top:222px;width:120px;height:60px" fill="none" stroke="#c9a88d" stroke-width="4" stroke-linecap="round">
+    <path d="M30 56 C20 44 40 36 30 22 C22 12 34 6 32 2"/><path d="M60 56 C50 44 70 36 60 22 C52 12 64 6 62 2"/><path d="M90 56 C80 44 100 36 90 22 C82 12 94 6 92 2"/>
+  </svg>
+  <div class="abs" style="left:132px;top:392px;width:236px;height:30px;border-radius:50%;background:#e8d9c6;box-shadow:0 8px 14px -8px rgba(91,58,41,.4)"></div>
+  <div class="abs" style="left:315px;top:308px;width:48px;height:52px;border-radius:50%;border:12px solid #fff;box-shadow:0 4px 10px -4px rgba(91,58,41,.35)"></div>
+  <div class="abs" style="left:168px;top:290px;width:164px;height:112px;background:#fff;border-radius:6px 6px 70px 70px/6px 6px 80px 80px;box-shadow:0 14px 24px -12px rgba(91,58,41,.45);overflow:hidden">
+    <div class="abs" style="left:0;right:0;top:34px;height:16px;background:#e07a3f"></div>
+  </div>
+  <div class="abs" style="left:174px;top:284px;width:152px;height:16px;border-radius:50%;background:#6b4330"></div>
+  <div class="chiprow" style="top:440px"><span class="chip" style="background:#5b3a29;color:#f7efe3">Avoinna 7–17</span><span class="chip" style="border:1px solid #d9c3ab">Aamiainen 7–11</span></div>
+</div>
+
+<!-- 6. Voima Gym: gym -->
+<div class="card" id="voima" style="background:#0d0d0d;color:#fff">
+  <div class="abs" style="left:-80px;top:250px;width:700px;height:120px;background:#c6ff3d;opacity:.1;transform:rotate(-12deg)"></div>
+  <div class="nav"><span style="font-family:Anton;font-style:italic;font-size:28px;color:#c6ff3d;letter-spacing:.04em">VOIMA</span><span class="pill" style="background:#c6ff3d;color:#0d0d0d">Liity nyt</span></div>
+  <div class="center" style="top:92px">
+    <div class="tag" style="color:rgba(255,255,255,.6)">Kuntosali · Oulu</div>
+    <div style="font-family:Anton;font-size:78px;line-height:.92;text-transform:uppercase;margin-top:14px;transform:skewX(-8deg)">Treenaa<br><span style="color:#c6ff3d">fiksummin.</span></div>
+  </div>
+  <div class="abs" style="left:70px;top:338px;width:360px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center">
+    <div style="border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:12px 0"><div style="font-family:Anton;font-size:30px;color:#c6ff3d">24/7</div><div style="font-size:11px;color:rgba(255,255,255,.6)">avoinna</div></div>
+    <div style="border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:12px 0"><div style="font-family:Anton;font-size:30px;color:#c6ff3d">40+</div><div style="font-size:11px;color:rgba(255,255,255,.6)">ryhmätuntia</div></div>
+    <div style="border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:12px 0"><div style="font-family:Anton;font-size:30px;color:#c6ff3d">1 kk</div><div style="font-size:11px;color:rgba(255,255,255,.6)">ilmaiseksi</div></div>
+  </div>
+</div>
+
+<!-- 7. Tilitoimisto Tase: accounting -->
+<div class="card" id="tase" style="background:#fbfcfc;color:#0f5f5c">
+  <div class="abs" style="width:420px;height:420px;left:40px;top:150px;border-radius:50%;background:radial-gradient(circle,#e3f1ef,rgba(227,241,239,0) 70%)"></div>
+  <div class="nav"><span style="display:flex;align-items:baseline;gap:6px"><span style="font-family:DMSerif;font-size:30px">Tase</span><span style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#5e7f7d">tilitoimisto</span></span><span class="pill" style="background:#0f5f5c;color:#fff">Varaa tapaaminen</span></div>
+  <div class="center" style="top:88px">
+    <div style="font-family:DMSerif;font-size:48px;line-height:1.02">Kirjanpito, joka<br><i>ei stressaa.</i></div>
+  </div>
+  <div class="abs" style="left:95px;top:236px;width:310px;height:180px;background:#fff;border-radius:18px;padding:16px 18px;box-shadow:0 24px 44px -24px rgba(15,95,92,.45);border:1px solid #e3ecea">
+    <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#5e7f7d"><span>Liikevaihto 2026</span><span style="background:#e3f1ef;color:#0f5f5c;font-weight:700;border-radius:999px;padding:3px 9px">+18 %</span></div>
+    <div id="taseBars" style="display:flex;align-items:flex-end;gap:10px;height:110px;margin-top:14px;border-bottom:1px solid #e3ecea"></div>
+  </div>
+  <div class="chiprow" style="top:432px"><span class="chip" style="border:1px solid #cfe2df;color:#0f5f5c">Kirjanpito</span><span class="chip" style="border:1px solid #cfe2df;color:#0f5f5c">Palkat</span><span class="chip" style="border:1px solid #cfe2df;color:#0f5f5c">Veroilmoitus</span></div>
+</div>
+
+<!-- 8. Kimppu: florist -->
+<div class="card" id="kimppu" style="background:#dfe7da;color:#2f4a3a">
+  <div class="nav"><span style="font-family:DMSerif;font-style:italic;font-size:30px">Kimppu</span><span class="pill" style="background:#2f4a3a;color:#f4efe4">Tilaa kukat</span></div>
+  <div class="center" style="top:86px">
+    <div class="tag" style="color:#5f7a66">Kukkakauppa · Helsinki</div>
+    <div style="font-family:DMSerif;font-size:52px;line-height:1;margin-top:10px">Kukkia joka<br><i style="color:#d9774f">hetkeen.</i></div>
+  </div>
+  <div class="abs" id="flowers" style="left:110px;top:226px;width:280px;height:200px"></div>
+  <div class="chiprow" style="top:446px"><span class="chip" style="background:#2f4a3a;color:#f4efe4">Kotiinkuljetus samana päivänä</span></div>
+</div>
+
+<script>
+  // Building windows (deterministic pattern).
+  for (const [id, n, seed] of [["virtaWin1", 16, 1], ["virtaWin2", 6, 3]]) {
+    const el = document.getElementById(id);
+    for (let i = 0; i < n; i++) {
+      const s = document.createElement("span");
+      s.style.cssText = `border-radius:2px;background:${(i * 7 + seed) % 5 === 0 ? "#ffd76a" : "rgba(255,255,255,.14)"}`;
+      el.append(s);
+    }
+  }
+  // Chart bars for the accounting card.
+  const bars = document.getElementById("taseBars");
+  [38, 46, 42, 55, 61, 58, 72, 86].forEach((h, i) => {
+    const b = document.createElement("span");
+    b.style.cssText = `flex:1;height:${h}%;border-radius:6px 6px 0 0;background:${i === 7 ? "linear-gradient(#1f8c86,#0f5f5c)" : "#cfe5e2"}`;
+    bars.append(b);
+  });
+  // Florist bouquet: stems meet at the bottom inside a kraft-paper wrap.
+  const fl = document.getElementById("flowers");
+  const add = (css, parent = fl) => {
+    const el = document.createElement("div");
+    el.style.cssText = "position:absolute;" + css;
+    parent.append(el);
+    return el;
+  };
+  const stems = [
+    { x: 140, y: 40, rot: 0, len: 162, color: "#f4a98a" },
+    { x: 78, y: 62, rot: -18, len: 150, color: "#f7c6c0" },
+    { x: 204, y: 66, rot: 16, len: 146, color: "#f6d58e" },
+    { x: 112, y: 104, rot: -8, len: 106, color: "#ffffff" },
+    { x: 172, y: 108, rot: 9, len: 100, color: "#f4a98a" },
+  ];
+  for (const s of stems) {
+    add(`left:${s.x - 2}px;top:${s.y}px;width:5px;height:${s.len}px;background:#4f7a5a;border-radius:3px;transform-origin:50% 0;transform:rotate(${s.rot}deg)`);
+  }
+  for (const [x, y, r] of [[52, 100, -32], [184, 96, 32], [118, 92, -80]]) {
+    add(`left:${x}px;top:${y}px;width:48px;height:20px;border-radius:50%;background:#5f8f69;transform:rotate(${r}deg)`);
+  }
+  const wrap = add("left:66px;top:114px;width:148px;height:94px;clip-path:polygon(0 0,100% 0,64% 100%,36% 100%);background:linear-gradient(90deg,#d6bd99,#efe1c8 46%,#d2b48c)");
+  add("left:0;right:0;top:56px;height:11px;background:#d9774f", wrap);
+  add("left:117px;top:164px;width:22px;height:15px;border:4px solid #d9774f;border-radius:50%;transform:rotate(-18deg)");
+  add("left:141px;top:164px;width:22px;height:15px;border:4px solid #d9774f;border-radius:50%;transform:rotate(18deg)");
+  add("left:135px;top:168px;width:10px;height:10px;border-radius:50%;background:#c4613c");
+  for (const s of stems) {
+    const head = add(`left:${s.x - 36}px;top:${s.y - 36}px;width:72px;height:72px`);
+    for (let k = 0; k < 6; k++) {
+      const a = (k / 6) * Math.PI * 2;
+      add(`left:${36 + Math.cos(a) * 18 - 17}px;top:${36 + Math.sin(a) * 18 - 17}px;width:34px;height:34px;border-radius:50%;background:${s.color};box-shadow:inset -3px -4px 8px rgba(0,0,0,.08)`, head);
+    }
+    add("left:26px;top:26px;width:20px;height:20px;border-radius:50%;background:#e0a43a", head);
+  }
+  window.__ready = document.fonts.ready.then(() => true);
+</script>
+</body>
+</html>

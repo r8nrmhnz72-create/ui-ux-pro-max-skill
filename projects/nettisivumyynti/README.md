@@ -19,7 +19,8 @@ The earlier dark design built on `ResponsiveHeroBanner` is kept in `src/DarkApp.
 render it from `src/App.tsx` to switch back.
 
 Sections: hero (video background, CSS-drawn browser and phone mockups of an example
-client site), services bento grid, portfolio of three example concepts (each button
+client site), 30-second video, services bento grid, "Ei kahta samanlaista" scroll gallery
+of eight example site designs, portfolio of three example concepts (each button
 pre-fills the demo order), why us, process, pricing with "every package includes",
 FAQ, "describe your site" chat box (`RuixenMoonChat`), demo order form, contact
 form, footer. The example sites are drawn with CSS in
@@ -56,3 +57,16 @@ export after the CSV data changes.
 
 The 30-second motion graphic under the hero is rendered from `motion/scene.html` with
 `npm run render:motion` (see `motion/README.md`). Output lives in `public/media/`.
+
+### Example-site gallery
+
+The "Ei kahta samanlaista" section (`src/components/templates/nexacore/stack-gallery.tsx`) uses
+`StackSpread` (`src/components/ui/stack-spread.tsx`, from Hyperiux Vault, built on `motion`): a pile
+of cards that scatters as you scroll, with pointer parallax on desktop and a two-column layout on
+touch screens. Additions to the original: title, subtitle, scroll-hint text, card shadow, section
+`id` and `cardAspect`, which keeps every card at one shape (square here) so images are never
+cropped. `src/demo-stack-spread.tsx` shows the component with its original sample images.
+
+The eight cards are example website designs drawn in `art/stack-cards.html` and rendered to
+`public/media/stack/*.jpg` with `npm run render:stack`. To use photos instead, change the `src`
+values in `stack-gallery.tsx` (square images work best).
