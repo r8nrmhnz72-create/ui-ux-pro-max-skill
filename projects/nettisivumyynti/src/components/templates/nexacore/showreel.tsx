@@ -83,7 +83,7 @@ export function Showreel() {
   }
 
   return (
-    <section id="video" className="bg-white px-4 py-24 sm:px-6 lg:py-28">
+    <section id="video" className="overflow-hidden bg-white px-4 py-24 sm:px-6 lg:py-28">
       <div className="mx-auto max-w-[1200px]">
         <div className="grid gap-6 lg:grid-cols-2 lg:items-end">
           <SectionHead chip="Video · 30 s" title="Mitä hyvä nettisivu tekee yrityksellesi?" align="left" />
