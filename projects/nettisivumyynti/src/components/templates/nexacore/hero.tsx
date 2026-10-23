@@ -7,6 +7,7 @@ import {
   Check,
   Dumbbell,
   HardHat,
+  Play,
   HeartPulse,
   House,
   Scissors,
@@ -201,10 +202,13 @@ export function Hero() {
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
             </a>
             <a
-              href="#hinnat"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-6 text-base text-white ring-1 ring-white/25 transition-colors hover:bg-white/10"
+              href="#video"
+              className="inline-flex min-h-12 items-center justify-center gap-2.5 rounded-xl px-6 text-base text-white ring-1 ring-white/25 transition-colors hover:bg-white/10"
             >
-              Katso hinnat
+              <span className="grid size-6 place-items-center rounded-full bg-white/15">
+                <Play className="size-3 translate-x-px" aria-hidden />
+              </span>
+              Katso video (30 s)
             </a>
           </div>
 

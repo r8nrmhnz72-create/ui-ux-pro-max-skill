@@ -51,3 +51,8 @@ palettes, font pairings, landing patterns and web UX rules from `src/ui-ux-pro-m
 Claude as the `search_design_database` tool (server tool loop, and the artifact `sample` tools in
 preview), together with the skill's condensed workflow and pre-delivery checklist. Re-run the
 export after the CSV data changes.
+
+### Home-page video
+
+The 30-second motion graphic under the hero is rendered from `motion/scene.html` with
+`npm run render:motion` (see `motion/README.md`). Output lives in `public/media/`.

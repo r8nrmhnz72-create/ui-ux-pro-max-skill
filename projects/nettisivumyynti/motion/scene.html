@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<title>Sivuseppä – motion graphic</title>
+<!--
+  The home-page video, built as one GSAP timeline on a 1920x1080 stage.
+  render.mjs seeks it frame by frame (window.__seek) and encodes the frames.
+  Open this file with ?play to watch it in real time while editing.
+-->
+<style>
+@font-face { font-family: PJS; font-weight: 400; src: url("../node_modules/@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: PJS; font-weight: 500; src: url("../node_modules/@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: PJS; font-weight: 600; src: url("../node_modules/@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: PJS; font-weight: 700; src: url("../node_modules/@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: PJS; font-weight: 800; src: url("../node_modules/@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-800-normal.woff2") format("woff2"); }
+@font-face { font-family: ISerif; font-style: italic; font-weight: 400; src: url("../node_modules/@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: ISerif; font-style: normal; font-weight: 400; src: url("../node_modules/@fontsource/instrument-serif/files/instrument-serif-latin-400-normal.woff2") format("woff2"); }
+
+:root {
+  --ink: #0b0526; --navy: #1a0b54; --blue: #1c4eff; --violet: #ac24ff; --orange: #fe881b;
+  --lav: #bdaee7; --muted: #6a6189;
+  --grad: linear-gradient(90deg, #2ba7ff, #ca45ff 50%, #fe881b);
+  --grad-a: linear-gradient(90deg, #1c4eff, #ac24ff 50%, #fe881b);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; }
+#stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--ink); color: #fff; font-family: PJS, sans-serif; -webkit-font-smoothing: antialiased; }
+.abs { position: absolute; }
+svg { display: block; }
+
+/* background */
+.glow { position: absolute; border-radius: 50%; pointer-events: none; }
+.g1 { width: 1300px; height: 1300px; background: radial-gradient(circle, rgba(28,78,255,.42), rgba(28,78,255,0) 62%); }
+.g2 { width: 1200px; height: 1200px; background: radial-gradient(circle, rgba(172,36,255,.38), rgba(172,36,255,0) 62%); }
+.g3 { width: 1500px; height: 1500px; background: radial-gradient(circle, rgba(254,136,27,.22), rgba(254,136,27,0) 60%); }
+.grid { position: absolute; inset: -80px; background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px); background-size: 80px 80px; -webkit-mask-image: radial-gradient(ellipse 62% 58% at 50% 45%, #000 20%, transparent 78%); }
+.noise { position: absolute; inset: 0; opacity: .07; mix-blend-mode: overlay; pointer-events: none; }
+
+/* kinetic type */
+.title { position: absolute; font-weight: 600; letter-spacing: -.035em; line-height: 1.04; }
+.title.center { left: 0; right: 0; text-align: center; }
+.w { display: inline-block; overflow: hidden; vertical-align: top; padding: 0 .05em .16em; margin: 0 -.05em -.16em; }
+.wi { display: inline-block; }
+.wi.em { font-family: ISerif, serif; font-style: italic; font-weight: 400; letter-spacing: -.01em; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: .07em; }
+
+/* S1 search */
+.search { left: 440px; top: 560px; width: 1040px; height: 120px; border-radius: 60px; background: #fff; color: var(--navy); display: flex; align-items: center; gap: 26px; padding: 0 46px; font-size: 46px; font-weight: 500; box-shadow: 0 40px 90px -30px rgba(0,0,0,.65); }
+.search svg { width: 46px; height: 46px; flex: none; color: #6a6189; }
+.caret { display: inline-block; width: 4px; height: 54px; border-radius: 2px; background: var(--blue); margin-left: 3px; vertical-align: middle; }
+.results { left: 440px; top: 712px; width: 1040px; }
+.res { height: 66px; border-radius: 20px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); margin-bottom: 14px; display: flex; align-items: center; gap: 20px; padding: 0 26px; }
+.res b { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,.25); flex: none; }
+.res i { display: block; height: 14px; border-radius: 7px; background: rgba(255,255,255,.22); }
+
+/* S2 old site */
+.old { left: 1060px; top: 230px; width: 800px; height: 560px; color: #222; font-family: "DejaVu Serif", "Times New Roman", serif; }
+.old .piece { position: absolute; }
+.old .win { left: 0; top: 40px; width: 800px; height: 520px; background: #ececec; border: 1px solid #9a9a9a; border-top: 0; border-radius: 0 0 6px 6px; box-shadow: 0 30px 70px -20px rgba(0,0,0,.7); }
+.old .bar { left: 0; top: 0; width: 800px; height: 41px; background: linear-gradient(#f6f6f6, #cdcdcd); border: 1px solid #9a9a9a; border-radius: 6px 6px 0 0; display: flex; align-items: center; gap: 10px; padding: 0 12px; font-family: "DejaVu Sans", sans-serif; font-size: 17px; color: #555; }
+.old .bar .url { flex: 1; height: 27px; background: #fff; border: 1px solid #a8a8a8; display: flex; align-items: center; padding: 0 10px; }
+.old .bar .x { width: 27px; height: 27px; border: 1px solid #8a8a8a; background: #e2e2e2; display: grid; place-items: center; font-size: 19px; line-height: 1; }
+.old .prog { left: 1px; top: 41px; height: 5px; width: 0; background: #3b6fd8; }
+.old .h { left: 40px; top: 74px; font-size: 40px; color: #1a1aa6; text-decoration: underline; transform: rotate(-1deg); white-space: nowrap; }
+.old .img { left: 40px; top: 150px; width: 300px; height: 190px; background: #cfcfcf; border: 2px solid #999; }
+.old .img::before, .old .img::after { content: ""; position: absolute; left: 50%; top: 50%; width: 330px; height: 2px; background: #9a9a9a; transform: translate(-50%, -50%) rotate(32deg); }
+.old .img::after { transform: translate(-50%, -50%) rotate(-32deg); }
+.old .txt { left: 372px; top: 160px; width: 380px; font-size: 22px; line-height: 1.35; }
+.old .tbl { left: 40px; top: 372px; display: flex; border: 1px solid #888; background: #fff; font-size: 20px; }
+.old .tbl span { padding: 10px 18px; border-right: 1px solid #888; color: #1a1aa6; text-decoration: underline; }
+.old .tbl span:last-child { border-right: 0; }
+.old .new { left: 600px; top: 360px; background: #e00; color: #ff0; font: 800 28px "DejaVu Sans", sans-serif; padding: 6px 14px; transform: rotate(8deg); }
+.old .foot { left: 40px; top: 470px; font: 16px "DejaVu Sans Mono", monospace; color: #777; }
+.old .veil { left: 1px; top: 46px; width: 798px; height: 513px; background: rgba(255,255,255,.55); display: grid; place-items: center; }
+.spinner { width: 96px; height: 96px; border-radius: 50%; border: 11px solid rgba(0,0,0,.12); border-top-color: #3b6fd8; }
+.timer { left: 1640px; top: 168px; display: flex; align-items: center; gap: 14px; background: #e5484d; color: #fff; font-size: 40px; font-weight: 700; padding: 14px 26px; border-radius: 999px; box-shadow: 0 20px 40px -14px rgba(229,72,77,.6); font-variant-numeric: tabular-nums; }
+.timer svg { width: 38px; height: 38px; }
+
+/* pointer */
+#cursor { left: 0; top: 0; width: 46px; height: 54px; z-index: 20; opacity: 0; filter: drop-shadow(0 6px 10px rgba(0,0,0,.45)); }
+.ripple { width: 90px; height: 90px; margin: -45px 0 0 -45px; border-radius: 50%; border: 4px solid #fff; opacity: 0; z-index: 19; }
+
+/* S3 browser that later becomes a phone */
+#site { left: 370px; top: 290px; width: 1180px; height: 690px; border-radius: 22px; z-index: 5; visibility: hidden; }
+#site .bg { position: absolute; inset: 0; border-radius: inherit; background: #17112e; box-shadow: 0 50px 100px -30px rgba(0,0,0,.7); }
+#site .clip { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; }
+#site .chrome { position: absolute; left: 0; right: 0; top: 0; height: 46px; background: #1d1637; display: flex; align-items: center; gap: 10px; padding: 0 18px; }
+.dot { width: 13px; height: 13px; border-radius: 50%; }
+#site .url { margin: 0 auto; padding: 6px 22px; border-radius: 999px; background: rgba(255,255,255,.07); color: rgba(255,255,255,.72); font-size: 16px; }
+#site .view { position: absolute; left: 0; right: 0; top: 46px; bottom: 0; overflow: hidden; }
+#site .outline { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+#site .bezel { position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 9px #0b0718, 0 0 0 1px rgba(255,255,255,.18); opacity: 0; pointer-events: none; }
+#site .notch { position: absolute; top: 14px; left: 50%; width: 112px; height: 30px; margin-left: -56px; border-radius: 999px; background: #0b0718; opacity: 0; }
+
+/* Studio Lumo, desktop (sized in em like the site mockups) */
+.lm { position: absolute; inset: 0; overflow: hidden; background: #fbf1ef; color: #3d1f2b; font-size: 24.5px; }
+.lm .blob1 { position: absolute; width: 24em; height: 24em; right: -5em; top: -7em; border-radius: 50%; background: radial-gradient(circle at 40% 40%, #f6c3be, rgba(246,195,190,0) 70%); }
+.lm .blob2 { position: absolute; width: 18em; height: 18em; left: -6em; bottom: -8em; border-radius: 50%; background: radial-gradient(circle, #f2d7b6, rgba(242,215,182,0) 70%); }
+.lm-nav { position: relative; display: flex; align-items: center; justify-content: space-between; padding: 1em 1.8em; }
+.lm-logo { font-family: ISerif, serif; font-style: italic; font-size: 1.7em; line-height: 1; }
+.lm-links { display: flex; gap: 1.6em; font-size: .7em; color: #8a6b76; }
+.pill { display: inline-block; font-size: .68em; font-weight: 700; padding: .6em 1.15em; border-radius: 999px; white-space: nowrap; }
+.rose { background: #c2557a; color: #fff; }
+.ghost { border: 1px solid rgba(61,31,43,.2); color: #3d1f2b; }
+.lm-hero { position: relative; display: grid; grid-template-columns: 1.05fr 1fr; gap: 1.6em; padding: .8em 1.8em 0; align-items: center; }
+.tag { font-size: .62em; letter-spacing: .2em; text-transform: uppercase; color: #c2557a; font-weight: 700; }
+.lm-h { font-family: ISerif, serif; font-style: italic; font-size: 3.4em; line-height: .98; margin-top: .18em; }
+.lm-p { font-size: .76em; line-height: 1.55; color: #8a6b76; margin-top: .9em; max-width: 19em; }
+.btns { display: flex; gap: .6em; margin-top: 1.2em; }
+.book { background: #fff; border-radius: 1.1em; padding: 1em 1.1em; box-shadow: 0 0 0 0 rgba(194,85,122,0), 0 29px 64px -29px rgba(61,31,43,.35); }
+.book-h { display: flex; justify-content: space-between; align-items: baseline; }
+.book-h b { font-size: .85em; }
+.book-h span { font-size: .62em; color: #8a6b76; }
+.days { display: grid; grid-template-columns: repeat(4, 1fr); gap: .4em; margin-top: .7em; }
+.day { text-align: center; padding: .45em 0; border-radius: .6em; background: #fbf1ef; }
+.day.on { background: #c2557a; color: #fff; }
+.day small { display: block; font-size: .55em; opacity: .8; }
+.day b { display: block; font-size: .85em; }
+.times { display: grid; grid-template-columns: repeat(3, 1fr); gap: .4em; margin-top: .55em; }
+.time { text-align: center; font-size: .62em; padding: .45em 0; border-radius: .55em; border: 1px solid #f1dcd8; }
+.time.on { border-color: #c2557a; background: #fdeef2; color: #c2557a; font-weight: 700; }
+.confirm { margin-top: .75em; text-align: center; background: #3d1f2b; color: #fff; border-radius: .6em; padding: .6em; font-size: .68em; font-weight: 700; }
+.strip { position: absolute; left: 1.8em; right: 1.8em; bottom: 1.2em; display: grid; grid-template-columns: repeat(3, 1fr); gap: .6em; }
+.strip div { display: flex; justify-content: space-between; background: rgba(255,255,255,.75); border: 1px solid #f1dcd8; border-radius: .8em; padding: .65em .85em; font-size: .7em; }
+.strip b { color: #c2557a; }
+
+/* wireframe that the finished site is painted over */
+.wire { position: absolute; inset: 0; font-size: 24.5px; background: #140f2b; }
+.wf { border: 2px solid rgba(189,174,231,.55); background: rgba(189,174,231,.08); border-radius: .35em; }
+.wf.pillw { border-radius: 999px; }
+.paint { position: absolute; inset: 0; clip-path: inset(0% 100% 0% 0%); }
+.scan { position: absolute; top: 0; bottom: 0; left: 0; width: 6px; margin-left: -3px; background: linear-gradient(#2ba7ff, #ca45ff, #fe881b); box-shadow: 0 0 30px 8px rgba(202,69,255,.55); opacity: 0; }
+
+/* Studio Lumo, phone */
+.mob { position: absolute; top: 0; bottom: 0; left: 50%; width: 360px; margin-left: -180px; opacity: 0; overflow: hidden; background: #fbf1ef; color: #3d1f2b; font-size: 18.5px; }
+.mob .blob { position: absolute; width: 16em; height: 16em; right: -6em; top: -5em; border-radius: 50%; background: radial-gradient(circle, #f6c3be, rgba(246,195,190,0) 70%); }
+.mob-nav { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 3em 1.2em .6em; }
+.burger { display: grid; gap: .22em; }
+.burger i { display: block; width: 1.1em; height: .14em; background: #3d1f2b; border-radius: 2px; }
+.mob-body { position: relative; padding: .6em 1.2em; }
+.mob-h { font-family: ISerif, serif; font-style: italic; font-size: 2.7em; line-height: .98; margin-top: .2em; }
+.mob-btn { margin-top: .9em; text-align: center; background: #c2557a; color: #fff; border-radius: 999px; padding: .7em; font-size: .75em; font-weight: 700; }
+.toast { position: absolute; left: .8em; right: .8em; top: 2.6em; z-index: 3; display: flex; align-items: center; gap: .6em; background: #fff; border-radius: 1em; padding: .75em .9em; font-size: .78em; font-weight: 700; color: #3d1f2b; box-shadow: 0 1em 2em -1em rgba(61,31,43,.45); }
+.toast span { width: 1.8em; height: 1.8em; border-radius: 50%; background: #1f9d55; display: grid; place-items: center; color: #fff; flex: none; }
+.toast svg { width: 1.05em; height: 1.05em; }
+
+/* S3 floating design tokens */
+.swatches { left: 252px; top: 450px; display: grid; gap: 0; }
+.sw { width: 66px; height: 66px; border-radius: 50%; margin-bottom: -16px; box-shadow: 0 0 0 5px var(--ink); }
+.aa { left: 1600px; top: 500px; font-family: ISerif, serif; font-style: italic; font-size: 170px; line-height: 1; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: .1em; }
+.aa small { display: block; font-family: PJS, sans-serif; font-style: normal; font-size: 22px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.6); -webkit-text-fill-color: rgba(255,255,255,.6); margin-top: 6px; }
+
+/* S4 cards */
+.card { border-radius: 30px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.13); }
+.score { left: 860px; top: 440px; width: 480px; height: 260px; display: flex; align-items: center; gap: 28px; padding: 0 34px; }
+.ringwrap { position: relative; width: 156px; height: 156px; flex: none; }
+.ringwrap .num { position: absolute; inset: 0; display: grid; place-items: center; font-size: 58px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.lbl { font-size: 32px; font-weight: 600; line-height: 1.15; }
+.sub { font-size: 21px; color: var(--lav); margin-top: 10px; }
+.serp { left: 1370px; top: 440px; width: 430px; height: 260px; padding: 26px 24px; }
+.serp .q { display: flex; align-items: center; gap: 14px; height: 54px; border-radius: 27px; background: #fff; color: #4d5156; font-size: 22px; padding: 0 20px; }
+.serp .q svg { width: 24px; height: 24px; color: #5f6368; }
+.serp .list { position: relative; margin-top: 18px; height: 152px; }
+.serp .ranks { position: absolute; left: 0; top: 0; }
+.serp .ranks div { height: 50px; width: 34px; display: flex; align-items: center; font-size: 22px; font-weight: 700; color: rgba(255,255,255,.55); }
+.row { position: absolute; left: 40px; right: 0; height: 44px; border-radius: 14px; display: flex; align-items: center; gap: 12px; padding: 0 14px; background: rgba(255,255,255,.06); font-size: 20px; color: rgba(255,255,255,.8); white-space: nowrap; }
+.row b { width: 18px; height: 18px; border-radius: 50%; background: rgba(255,255,255,.3); flex: none; }
+.row.me { background: #fff; color: var(--navy); font-weight: 700; }
+.row.me b { background: var(--grad-a); }
+.one { position: absolute; right: 12px; top: 50%; margin-top: -15px; height: 30px; padding: 0 10px; border-radius: 9px; background: var(--blue); color: #fff; font-size: 17px; font-weight: 800; display: grid; place-items: center; }
+.devices { left: 860px; top: 730px; width: 940px; height: 190px; display: flex; align-items: center; gap: 40px; padding: 0 44px; }
+.devices .lbl { width: 330px; }
+.dev { position: relative; display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: 20px; color: rgba(255,255,255,.75); width: 150px; }
+.dev svg { width: 78px; height: 78px; }
+.dev .ok { position: absolute; right: 22px; top: -8px; width: 34px; height: 34px; border-radius: 50%; background: #1f9d55; display: grid; place-items: center; }
+.dev .ok svg { width: 20px; height: 20px; color: #fff; }
+
+/* S5 notifications */
+.note { width: 470px; z-index: 6; }
+.note .in { display: flex; align-items: center; gap: 20px; background: #fff; color: var(--navy); border-radius: 26px; padding: 22px 26px; box-shadow: 0 30px 60px -24px rgba(0,0,0,.6); }
+.note .ic { width: 66px; height: 66px; border-radius: 18px; background: var(--grad-a); display: grid; place-items: center; flex: none; }
+.note .ic svg { width: 34px; height: 34px; color: #fff; }
+.note b { display: block; font-size: 30px; }
+.note span { display: block; font-size: 22px; color: var(--muted); margin-top: 4px; }
+
+/* S6 end card */
+.brand { left: 0; right: 0; top: 330px; display: flex; justify-content: center; align-items: center; gap: 40px; }
+.wm { font-size: 150px; font-weight: 600; letter-spacing: -.045em; line-height: 1; padding-bottom: .1em; }
+.cta { left: 0; right: 0; top: 735px; display: flex; justify-content: center; align-items: center; gap: 30px; }
+.ctapill { display: inline-flex; align-items: center; gap: 14px; background: #fff; color: var(--navy); font-size: 36px; font-weight: 700; padding: 22px 40px; border-radius: 20px; }
+.ctapill svg { width: 34px; height: 34px; }
+.ctaurl { font-size: 36px; color: var(--lav); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="glow g1" id="g1"></div>
+  <div class="glow g2" id="g2"></div>
+  <div class="glow g3" id="g3"></div>
+  <div class="grid" id="grid"></div>
+
+  <!-- S1: customers search online -->
+  <h1 class="title center" id="t1" style="top:236px;font-size:106px">Asiakkaasi etsivät<br>sinua <em>netistä.</em></h1>
+  <div class="abs search" id="search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <div><span id="query"></span><span class="caret" id="caret"></span></div>
+  </div>
+  <div class="abs results" id="results">
+    <div class="res"><b></b><i style="width:300px"></i><i style="width:180px;opacity:.6"></i></div>
+    <div class="res"><b></b><i style="width:360px"></i><i style="width:140px;opacity:.6"></i></div>
+    <div class="res"><b></b><i style="width:260px"></i><i style="width:200px;opacity:.6"></i></div>
+  </div>
+
+  <!-- S2: a slow, outdated site loses them -->
+  <h1 class="title" id="t2" style="left:130px;top:330px;font-size:96px">Hidas sivu ajaa<br>asiakkaat <em>muualle.</em></h1>
+  <div class="abs old" id="old">
+    <div class="piece win"></div>
+    <div class="piece bar"><span>&#9664;</span><span>&#9654;</span><div class="url">http://vanha-kotisivu.fi/index.htm</div><div class="x" id="oldx">&times;</div></div>
+    <div class="piece prog" id="prog"></div>
+    <div class="piece h">Tervetuloa kotisivuillemme!!</div>
+    <div class="piece img"></div>
+    <div class="piece txt">Olemme palvelleet asiakkaitamme jo vuodesta 1998. Soita ja kysy lisää!</div>
+    <div class="piece tbl"><span>Palvelut</span><span>Hinnasto</span><span>Yhteystiedot</span></div>
+    <div class="piece new">UUTTA!</div>
+    <div class="piece foot">Päivitetty viimeksi 12.3.2014 · Kävijöitä: 004817</div>
+    <div class="piece veil"><div class="spinner" id="spinner"></div></div>
+  </div>
+  <div class="abs timer" id="timer">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg>
+    <span id="timerTxt">0,0 s</span>
+  </div>
+
+  <!-- S3: we build a site that sells (S4-S5: the same element becomes a phone) -->
+  <h1 class="title center" id="t3" style="top:96px;font-size:90px">Me rakennamme sivun, joka <em>myy.</em></h1>
+  <div class="abs swatches" id="swatches">
+    <div class="sw" style="background:#c2557a"></div>
+    <div class="sw" style="background:#f6c3be"></div>
+    <div class="sw" style="background:#3d1f2b"></div>
+    <div class="sw" style="background:#fbf1ef"></div>
+    <div class="sw" style="background:#f2d7b6"></div>
+  </div>
+  <div class="abs aa" id="aa">Aa<small>Instrument Serif</small></div>
+
+  <div class="abs" id="site">
+    <div class="bg" id="siteBg"></div>
+    <div class="clip">
+      <div class="chrome" id="chrome">
+        <span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span>
+        <span class="url">sivuseppa.fi/demo/studio-lumo</span><span style="width:60px"></span>
+      </div>
+      <div class="view" id="view">
+        <div class="desk" id="desk" style="position:absolute;left:0;top:0;width:1180px;height:644px">
+          <div class="wire" id="wire">
+            <div class="lm-nav"><div class="wf" style="width:3.2em;height:1.4em"></div><div style="display:flex;gap:1.2em"><div class="wf pillw" style="width:3.4em;height:.6em"></div><div class="wf pillw" style="width:3.8em;height:.6em"></div><div class="wf pillw" style="width:3.6em;height:.6em"></div></div><div class="wf pillw" style="width:5.4em;height:1.7em"></div></div>
+            <div class="lm-hero">
+              <div>
+                <div class="wf pillw" style="width:10em;height:.55em"></div>
+                <div class="wf" style="width:11em;height:2.6em;margin-top:.5em"></div>
+                <div class="wf" style="width:8em;height:2.6em;margin-top:.4em"></div>
+                <div class="wf pillw" style="width:15em;height:.5em;margin-top:1.1em"></div>
+                <div class="wf pillw" style="width:12em;height:.5em;margin-top:.45em"></div>
+                <div style="display:flex;gap:.6em;margin-top:1.2em"><div class="wf pillw" style="width:5.4em;height:1.7em"></div><div class="wf pillw" style="width:5em;height:1.7em"></div></div>
+              </div>
+              <div class="wf" style="height:12.2em;border-radius:1.1em"></div>
+            </div>
+            <div class="strip" style="grid-template-columns:repeat(3,1fr)"><div class="wf" style="height:1.9em"></div><div class="wf" style="height:1.9em"></div><div class="wf" style="height:1.9em"></div></div>
+          </div>
+          <div class="paint" id="paint">
+            <div class="lm">
+              <div class="blob1"></div><div class="blob2"></div>
+              <div class="lm-nav"><span class="lm-logo">lumo</span><div class="lm-links"><span>Hoidot</span><span>Hinnasto</span><span>Lahjakortit</span></div><span class="pill rose" id="bookBtn">Varaa aika</span></div>
+              <div class="lm-hero">
+                <div>
+                  <div class="tag">Kauneushoitola · Helsinki</div>
+                  <div class="lm-h">Hetki vain<br>sinulle.</div>
+                  <div class="lm-p">Kasvohoidot, ripset ja hieronnat rauhallisessa studiossa Kalliossa.</div>
+                  <div class="btns"><span class="pill rose">Varaa aika</span><span class="pill ghost">Hinnasto</span></div>
+                </div>
+                <div class="book" id="bookCard">
+                  <div class="book-h"><b>Varaa aika</b><span>Marraskuu</span></div>
+                  <div class="days"><div class="day"><small>Ma</small><b>12</b></div><div class="day on"><small>Ti</small><b>13</b></div><div class="day"><small>Ke</small><b>14</b></div><div class="day"><small>To</small><b>15</b></div></div>
+                  <div class="times"><div class="time">10.00</div><div class="time on">11.30</div><div class="time">13.00</div><div class="time">14.30</div><div class="time">16.00</div><div class="time">17.30</div></div>
+                  <div class="confirm">Vahvista varaus</div>
+                </div>
+              </div>
+              <div class="strip"><div><span>Kasvohoito</span><b>75 €</b></div><div><span>Ripset</span><b>45 €</b></div><div><span>Hieronta</span><b>60 €</b></div></div>
+            </div>
+          </div>
+          <div class="scan" id="scan"></div>
+        </div>
+        <div class="mob" id="mob">
+          <div class="blob"></div>
+          <div class="toast" id="toast"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Varaus vahvistettu</div>
+          <div class="mob-nav"><span class="lm-logo" style="font-size:1.55em">lumo</span><div class="burger"><i></i><i></i><i></i></div></div>
+          <div class="mob-body">
+            <div class="tag" style="font-size:.6em">Kauneushoitola</div>
+            <div class="mob-h">Hetki vain sinulle.</div>
+            <div class="lm-p" style="font-size:.74em;margin-top:.7em">Kasvohoidot, ripset ja hieronnat Kalliossa.</div>
+            <div class="mob-btn">Varaa aika</div>
+            <div class="book" style="margin-top:1.1em;padding:.9em">
+              <div class="book-h"><b>Varaa aika</b><span>Marraskuu</span></div>
+              <div class="days"><div class="day"><small>Ma</small><b>12</b></div><div class="day on"><small>Ti</small><b>13</b></div><div class="day"><small>Ke</small><b>14</b></div><div class="day"><small>To</small><b>15</b></div></div>
+              <div class="times"><div class="time">10.00</div><div class="time on">11.30</div><div class="time">13.00</div></div>
+              <div class="confirm">Vahvista varaus</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <svg class="outline" id="outline" viewBox="0 0 1180 690" preserveAspectRatio="none">
+      <defs><linearGradient id="og" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2ba7ff"/><stop offset=".5" stop-color="#ca45ff"/><stop offset="1" stop-color="#fe881b"/></linearGradient></defs>
+      <rect id="outlineRect" x="1.5" y="1.5" width="1177" height="687" rx="22" fill="none" stroke="url(#og)" stroke-width="3" pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000"/>
+    </svg>
+    <div class="bezel" id="bezel"></div>
+    <div class="notch" id="notch"></div>
+  </div>
+
+  <!-- S4: fast, mobile, easy to find -->
+  <h1 class="title" id="t4" style="left:860px;top:150px;font-size:94px">Nopea. Mobiilissa.<br><em>Helppo löytää.</em></h1>
+  <div class="abs card score" id="score">
+    <div class="ringwrap">
+      <svg viewBox="0 0 170 170" width="156" height="156"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#34d399"/><stop offset="1" stop-color="#059669"/></linearGradient></defs>
+        <circle cx="85" cy="85" r="72" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="14"/>
+        <circle id="ring98" cx="85" cy="85" r="72" fill="none" stroke="url(#rg)" stroke-width="14" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100" transform="rotate(-90 85 85)"/>
+      </svg>
+      <div class="num" id="scoreNum">0</div>
+    </div>
+    <div><div class="lbl">Nopeus<br>mobiilissa</div><div class="sub">Tavoite 90+</div></div>
+  </div>
+  <div class="abs card serp" id="serp">
+    <div class="q"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>kauneushoitola helsinki</div>
+    <div class="list">
+      <div class="ranks"><div>1.</div><div>2.</div><div>3.</div></div>
+      <div class="row" id="rowA" style="top:3px"><b></b>Kilpailija Oy</div>
+      <div class="row" id="rowB" style="top:53px"><b></b>Toinen kilpailija</div>
+      <div class="row me" id="rowMe" style="top:103px"><b></b>Studio Lumo – Kallio<span class="one" id="one">#1</span></div>
+    </div>
+  </div>
+  <div class="abs card devices" id="devices">
+    <div class="lbl">Toimii kaikilla laitteilla</div>
+    <div class="dev" id="dev1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Tietokone<span class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></div>
+    <div class="dev" id="dev2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M12 18h.01"/></svg>Tabletti<span class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></div>
+    <div class="dev" id="dev3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M12 18h.01"/></svg>Puhelin<span class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></div>
+  </div>
+
+  <!-- S5: a site that brings customers -->
+  <h1 class="title center" id="t5" style="top:92px;font-size:98px">Sivu, joka tuo <em>asiakkaita.</em></h1>
+  <div class="abs note" id="n1" style="left:1230px;top:330px"><div class="in">
+    <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+    <div><b>Uusi ajanvaraus</b><span>Ti 13.11. klo 11.30 · Kasvohoito</span></div></div></div>
+  <div class="abs note" id="n2" style="left:230px;top:450px"><div class="in">
+    <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg></div>
+    <div><b>Uusi viesti</b><span>Onko teillä lahjakortteja?</span></div></div></div>
+  <div class="abs note" id="n3" style="left:1250px;top:615px"><div class="in">
+    <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+    <div><b>Uusi ajanvaraus</b><span>Ke 14.11. klo 14.00 · Ripset</span></div></div></div>
+  <div class="abs note" id="n4" style="left:250px;top:770px"><div class="in">
+    <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg></div>
+    <div><b>Lahjakortti myyty</b><span>75 € · verkkokauppa</span></div></div></div>
+
+  <!-- S6: end card -->
+  <div class="abs brand" id="brand">
+    <svg width="150" height="150" viewBox="0 0 150 150"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1c4eff"/><stop offset=".5" stop-color="#ac24ff"/><stop offset="1" stop-color="#fe881b"/></linearGradient></defs>
+      <circle id="logoRing" cx="75" cy="75" r="60" fill="none" stroke="url(#lg)" stroke-width="13" stroke-linecap="round" pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000" transform="rotate(-90 75 75)"/></svg>
+    <div class="wm" id="wordmark">Sivuseppä</div>
+  </div>
+  <h2 class="title center" id="t6" style="top:575px;font-size:70px;font-weight:500">Nettisivut, jotka <em>tuovat asiakkaita.</em></h2>
+  <div class="abs cta" id="cta"><span class="ctapill">Tilaa ilmainen demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><span class="ctaurl">sivuseppa.fi</span></div>
+
+  <svg class="abs" id="cursor" viewBox="0 0 28 32"><path d="M3 2 L3 24 L9 18.5 L13 27.5 L17 25.8 L13 17 L21 17 Z" fill="#fff" stroke="#0b0526" stroke-width="1.6" stroke-linejoin="round"/></svg>
+  <div class="abs ripple" id="ripple"></div>
+  <div class="noise" id="noise"></div>
+</div>
+
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<script>
+(async () => {
+  await Promise.all(
+    ["400", "500", "600", "700", "800"].map((w) => document.fonts.load(`${w} 100px PJS`)).concat([
+      document.fonts.load("italic 400 100px ISerif"),
+      document.fonts.load("400 100px ISerif"),
+    ]),
+  );
+  await document.fonts.ready;
+  const DURATION = 30;
+  const $ = (id) => document.getElementById(id);
+
+  // Deterministic noise texture, so every render is identical.
+  let seed = 7;
+  const rand = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+  const c = document.createElement("canvas");
+  c.width = c.height = 256;
+  const ctx = c.getContext("2d");
+  const img = ctx.createImageData(256, 256);
+  for (let i = 0; i < img.data.length; i += 4) {
+    const v = Math.floor(rand() * 255);
+    img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+    img.data[i + 3] = 255;
+  }
+  ctx.putImageData(img, 0, 0);
+  $("noise").style.backgroundImage = `url(${c.toDataURL()})`;
+
+  // Split headlines into masked words for the kinetic type.
+  function split(el) {
+    const out = [];
+    const walk = (node, em) => {
+      for (const child of [...node.childNodes]) {
+        if (child.nodeType === 3) {
+          const parts = child.textContent.split(/(\s+)/);
+          const frag = document.createDocumentFragment();
+          for (const p of parts) {
+            if (!p) continue;
+            if (/^\s+$/.test(p)) { frag.append(" "); continue; }
+            const w = document.createElement("span");
+            w.className = "w";
+            const wi = document.createElement("span");
+            wi.className = em ? "wi em" : "wi";
+            wi.textContent = p;
+            w.append(wi);
+            frag.append(w);
+            out.push(wi);
+          }
+          child.replaceWith(frag);
+        } else if (child.nodeName === "EM") {
+          walk(child, true);
+          child.replaceWith(...child.childNodes);
+        }
+      }
+    };
+    walk(el, false);
+    return out;
+  }
+  const words = {};
+  for (const id of ["t1", "t2", "t3", "t4", "t5", "t6"]) words[id] = split($(id));
+
+  // Pointer targets measured from the static layout.
+  const center = (el) => {
+    const r = el.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  };
+  const closeBtn = center($("oldx"));
+  const bookBtn = center($("bookBtn"));
+
+  const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+  const wordsIn = (id, at, stagger = 0.07) =>
+    tl.fromTo(words[id], { yPercent: 118 }, { yPercent: 0, duration: 0.95, ease: "expo.out", stagger }, at);
+  const wordsOut = (id, at) => tl.to(words[id], { yPercent: -118, duration: 0.5, ease: "power3.in", stagger: 0.025 }, at);
+  const state = { typed: 0, timer: 0, score: 0 };
+
+  /* ---------- S1 ---------- */
+  wordsIn("t1", 0.25);
+  tl.fromTo("#search", { opacity: 0, y: 40, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "back.out(1.4)" }, 1.1);
+  tl.to(state, { typed: 23, duration: 1.4, ease: "none" }, 1.7);
+  tl.fromTo("#results .res", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.12 }, 3.1);
+  wordsOut("t1", 3.95);
+  tl.to(["#search", "#results"], { opacity: 0, y: -50, duration: 0.5, ease: "power3.in", stagger: 0.05 }, 4.0);
+
+  /* ---------- S2 ---------- */
+  wordsIn("t2", 4.7);
+  tl.fromTo("#old", { opacity: 0, y: 70, rotation: 2 }, { opacity: 1, y: 0, rotation: 0, duration: 0.9 }, 4.8);
+  tl.fromTo("#prog", { width: 0 }, { width: 290, duration: 1.2, ease: "power2.out" }, 5.2);
+  tl.fromTo("#timer", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.6, ease: "back.out(2)" }, 5.3);
+  tl.to(state, { timer: 4.8, duration: 2.2, ease: "none" }, 5.3);
+  tl.set("#cursor", { opacity: 0, x: 1880, y: 1040, scale: 1 }, 6.84);
+  tl.to("#cursor", { opacity: 1, x: closeBtn.x - 6, y: closeBtn.y - 4, duration: 0.65, ease: "power2.inOut" }, 6.85);
+  tl.to("#cursor", { scale: 0.82, duration: 0.08, yoyo: true, repeat: 1, transformOrigin: "10% 5%" }, 7.55);
+  tl.set("#ripple", { opacity: 0.9, scale: 0.2, x: closeBtn.x, y: closeBtn.y }, 7.6);
+  tl.to("#ripple", { opacity: 0, scale: 1.4, duration: 0.5, ease: "power2.out" }, 7.6);
+  const pieces = gsap.utils.toArray("#old .piece");
+  pieces.forEach((p, i) => {
+    tl.to(p, {
+      y: 720 + rand() * 260,
+      x: (rand() - 0.5) * 220,
+      rotation: (rand() - 0.5) * 70,
+      opacity: 0,
+      duration: 1.0,
+      ease: "power2.in",
+    }, 7.75 + i * 0.045);
+  });
+  tl.to(["#timer", "#cursor"], { opacity: 0, duration: 0.3 }, 7.75);
+  wordsOut("t2", 8.3);
+
+  /* ---------- S3 ---------- */
+  wordsIn("t3", 9.0, 0.06);
+  tl.set("#site", { visibility: "visible" }, 9.25);
+  tl.fromTo("#outlineRect", { strokeDashoffset: 1000 }, { strokeDashoffset: 0, duration: 0.9, ease: "power2.inOut" }, 9.3);
+  tl.fromTo("#siteBg", { opacity: 0 }, { opacity: 1, duration: 0.5 }, 9.9);
+  tl.fromTo("#chrome", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 10.1);
+  tl.fromTo("#wire", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 10.1);
+  tl.fromTo("#wire .wf", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.5)", stagger: 0.045 }, 10.2);
+  tl.to("#outline", { opacity: 0, duration: 0.5 }, 10.9);
+  tl.fromTo("#paint", { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.1, ease: "power3.inOut" }, 11.6);
+  tl.fromTo("#scan", { left: 0, opacity: 0 }, { left: 1180, duration: 1.1, ease: "power3.inOut" }, 11.6);
+  tl.to("#scan", { opacity: 1, duration: 0.15 }, 11.6);
+  tl.to("#scan", { opacity: 0, duration: 0.25 }, 12.5);
+  tl.fromTo("#swatches .sw", { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.55, ease: "back.out(2)", stagger: 0.06 }, 12.3);
+  tl.fromTo("#aa", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.8 }, 12.5);
+  tl.set("#cursor", { opacity: 0, x: 1560, y: 1100, scale: 1 }, 12.89);
+  tl.to("#cursor", { opacity: 1, x: bookBtn.x - 4, y: bookBtn.y - 2, duration: 0.7, ease: "power2.inOut" }, 12.9);
+  tl.to("#cursor", { scale: 0.82, duration: 0.08, yoyo: true, repeat: 1, transformOrigin: "10% 5%" }, 13.65);
+  tl.set("#ripple", { opacity: 0.9, scale: 0.2, x: bookBtn.x, y: bookBtn.y }, 13.7);
+  tl.to("#ripple", { opacity: 0, scale: 1.4, duration: 0.5, ease: "power2.out" }, 13.7);
+  tl.to("#bookBtn", { scale: 0.9, duration: 0.1, yoyo: true, repeat: 1 }, 13.68);
+  tl.to("#bookCard", { boxShadow: "0 0 0 6px rgba(194,85,122,.45), 0 29px 64px -29px rgba(61,31,43,.35)", duration: 0.4 }, 13.8);
+  tl.to("#cursor", { opacity: 0, duration: 0.3 }, 14.6);
+  wordsOut("t3", 14.9);
+  tl.to(["#swatches", "#aa"], { opacity: 0, y: -30, duration: 0.45, ease: "power3.in" }, 14.95);
+
+  /* ---------- S3 -> S4: the browser becomes a phone ---------- */
+  tl.set("#view", { backgroundColor: "#fbf1ef" }, 15.3);
+  tl.to("#site", { left: 330, top: 170, width: 360, height: 740, borderRadius: 54, duration: 1.05, ease: "power3.inOut" }, 15.3);
+  tl.to("#chrome", { height: 0, opacity: 0, duration: 0.6, ease: "power2.inOut" }, 15.35);
+  tl.to("#view", { top: 0, duration: 0.6, ease: "power2.inOut" }, 15.35);
+  tl.to("#desk", { opacity: 0, duration: 0.2 }, 15.82);
+  tl.to("#mob", { opacity: 1, duration: 0.2 }, 15.86);
+  tl.to(["#bezel", "#notch"], { opacity: 1, duration: 0.35 }, 16.0);
+
+  /* ---------- S4 ---------- */
+  wordsIn("t4", 16.0);
+  tl.fromTo("#score", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.8 }, 16.7);
+  tl.fromTo("#ring98", { strokeDashoffset: 100 }, { strokeDashoffset: 2, duration: 1.3, ease: "power2.out" }, 17.0);
+  tl.to(state, { score: 98, duration: 1.3, ease: "power2.out" }, 17.0);
+  tl.fromTo("#serp", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.8 }, 17.2);
+  tl.fromTo("#one", { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(2.5)" }, 18.95);
+  tl.to("#rowMe", { top: 3, duration: 0.6, ease: "power3.inOut" }, 18.3);
+  tl.to("#rowA", { top: 53, duration: 0.6, ease: "power3.inOut" }, 18.3);
+  tl.to("#rowB", { top: 103, duration: 0.6, ease: "power3.inOut" }, 18.3);
+  tl.fromTo("#devices", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.8 }, 17.7);
+  ["#dev1", "#dev2", "#dev3"].forEach((d, i) => {
+    tl.fromTo(d, { opacity: 0.35 }, { opacity: 1, duration: 0.3 }, 18.6 + i * 0.3);
+    tl.fromTo(`${d} .ok`, { scale: 0 }, { scale: 1, duration: 0.45, ease: "back.out(2.5)" }, 18.65 + i * 0.3);
+  });
+  wordsOut("t4", 20.3);
+  tl.to(["#score", "#serp", "#devices"], { opacity: 0, x: 80, duration: 0.5, ease: "power3.in", stagger: 0.07 }, 20.4);
+
+  /* ---------- S5 ---------- */
+  tl.to("#site", { left: 780, top: 268, duration: 0.8, ease: "power3.inOut" }, 20.85);
+  wordsIn("t5", 21.2);
+  tl.fromTo("#toast", { yPercent: -180, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.7, ease: "back.out(1.6)" }, 21.9);
+  ["#n1", "#n2", "#n3", "#n4"].forEach((n, i) => {
+    tl.fromTo(n, { opacity: 0, scale: 0.7, y: 40 }, { opacity: 1, scale: 1, y: 0, duration: 0.7, ease: "back.out(1.6)" }, 22.1 + i * 0.5);
+  });
+  wordsOut("t5", 25.0);
+  tl.to(["#n1", "#n2", "#n3", "#n4"], { opacity: 0, scale: 0.9, y: -40, duration: 0.5, ease: "power3.in", stagger: 0.06 }, 25.15);
+  tl.to("#site", { opacity: 0, scale: 0.86, duration: 0.6, ease: "power3.in" }, 25.3);
+
+  /* ---------- S6 ---------- */
+  tl.fromTo("#logoRing", { strokeDashoffset: 1000 }, { strokeDashoffset: 0, duration: 0.9, ease: "power2.inOut" }, 26.1);
+  tl.fromTo("#wordmark", { clipPath: "inset(0% 100% 0% 0%)", x: -30 }, { clipPath: "inset(0% 0% 0% 0%)", x: 0, duration: 0.8, ease: "power3.out" }, 26.55);
+  wordsIn("t6", 27.05, 0.06);
+  tl.fromTo("#cta", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, ease: "back.out(1.6)" }, 27.65);
+  tl.to(["#brand", "#t6", "#cta"], { opacity: 0, scale: 0.97, duration: 0.65, ease: "power2.in" }, 29.25);
+  tl.set({}, {}, DURATION);
+
+
+  const query = "kauneushoitola helsinki";
+  function procedural(t) {
+    // Background glows drift on a 30 s period, so the loop is seamless.
+    const a = (t / DURATION) * Math.PI * 2;
+    $("g1").style.transform = `translate(${-300 + Math.sin(a) * 120}px, ${-470 + Math.cos(a) * 80}px)`;
+    $("g2").style.transform = `translate(${1050 + Math.cos(a) * 110}px, ${-40 + Math.sin(a) * 120}px)`;
+    $("g3").style.transform = `translate(${210 + Math.sin(a * 2) * 160}px, ${500 + Math.cos(a) * 50}px)`;
+    $("grid").style.transform = `translateY(${((t * 80) / DURATION) % 80}px)`;
+    $("query").textContent = query.slice(0, Math.round(state.typed));
+    $("caret").style.opacity = t < 1.1 || t > 4.3 ? 0 : Math.floor(t * 2.2) % 2 === 0 || (t > 1.7 && t < 3.1) ? 1 : 0;
+    $("timerTxt").textContent = `${state.timer.toFixed(1).replace(".", ",")} s`;
+    $("spinner").style.transform = `rotate(${t * 400}deg)`;
+    $("scoreNum").textContent = Math.round(state.score);
+    ["n1", "n2", "n3", "n4"].forEach((id, i) => {
+      $(id).firstElementChild.style.transform = `translateY(${Math.sin(t * 1.7 + i * 1.3) * 7}px)`;
+    });
+  }
+
+  window.__duration = DURATION;
+  window.__seek = (t) => {
+    tl.seek(t, false);
+    procedural(t);
+  };
+  window.__seek(0);
+  window.__ready = true;
+
+  if (location.search.includes("play")) {
+    const start = performance.now();
+    const loop = (now) => {
+      window.__seek(((now - start) / 1000) % DURATION);
+      requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+  }
+})();
+</script>
+</body>
+</html>

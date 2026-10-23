@@ -13,6 +13,7 @@ import { Precision } from "./precision";
 import { Pricing } from "./pricing";
 import { Services } from "./services";
 import { Showcase } from "./showcase";
+import { Showreel } from "./showreel";
 
 export default function Nexacore() {
   const [brief, setBrief] = useState({ text: "", n: 0 });
@@ -34,6 +35,7 @@ export default function Nexacore() {
       <Navbar />
       <main>
         <Hero />
+        <Showreel />
         <Services />
         <Showcase onPick={handleBrief} />
         <Freedom />
