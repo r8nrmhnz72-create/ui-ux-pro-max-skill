@@ -19,6 +19,9 @@
  *
  * Needs `sharp` (already a dependency of Next.js) and Playwright with Chromium:
  *   npm i -D playwright && npx playwright install chromium
+ *
+ * The small belt versions (<id>-sm.webp) are derived from these files, so run
+ * `node scripts/art/resize-plates.cjs` afterwards. Preview: /dev/plates in `next dev`.
  */
 "use strict";
 
@@ -103,7 +106,7 @@ const ICONS = {
  */
 const GLAZES = {
   kipina: {
-    dark: false, rim: "#F6EEDD", rimHi: "#FFFCF4", rimLo: "#E0D3BA", well: "#F5ECD9", wellHi: "#FAF3E3", wellLo: "#ECE1CA",
+    dark: false, rim: "#F8EDD6", rimHi: "#FFFAEC", rimLo: "#E2D2B3", well: "#F7EBD2", wellHi: "#FBF2DE", wellLo: "#EDDFC3",
     edgeHi: "#CDBD9C", edgeLo: "#A38F68", edgeW: 3.2, gloss: 0.55, grain: 0.05,
   },
   paja: {
@@ -128,7 +131,7 @@ const GLAZES = {
     edgeHi: "#93C4B5", edgeLo: "#6BA391", edgeW: 3.2, gloss: 0.7, grain: 0.03,
   },
   toimisto: {
-    dark: false, rim: "#F5EFDE", rimHi: "#FFFCF2", rimLo: "#DED4BB", well: "#F4EDDB", wellHi: "#F9F3E4", wellLo: "#EAE1CB",
+    dark: false, rim: "#F3F0E6", rimHi: "#FFFEF8", rimLo: "#DAD5C6", well: "#F2EEE3", wellHi: "#F8F5EC", wellLo: "#E6E1D3",
     edgeHi: "#1B2F58", edgeLo: "#101D38", edgeW: 5.4, gloss: 0.6, grain: 0.03,
   },
   kauppa: {

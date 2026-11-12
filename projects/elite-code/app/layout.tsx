@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 
@@ -70,7 +71,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <main id="sisalto" data-page-content className="flex-1">
           {children}
         </main>
-        <SiteFooter />
+        <Suspense>
+          <SiteFooter />
+        </Suspense>
         <RevealObserver />
       </body>
     </html>
