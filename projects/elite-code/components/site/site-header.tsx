@@ -74,7 +74,7 @@ export function SiteHeader({ links, cta, contact, labels }: SiteHeaderProps) {
               : "border-transparent bg-transparent",
         )}
       >
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 md:h-20 md:px-8">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 md:h-20 md:px-8 lg:px-10">
           <Link
             href="/"
             aria-label={labels.home}
@@ -134,7 +134,7 @@ export function SiteHeader({ links, cta, contact, labels }: SiteHeaderProps) {
             transition={{ duration: reduced ? 0.12 : 0.32, ease: [0.22, 0.85, 0.3, 1] }}
             className="fixed inset-0 overflow-y-auto overscroll-contain bg-background pt-16 md:pt-20"
           >
-            <div className="mx-auto flex min-h-full max-w-7xl flex-col px-4 pb-8 md:px-8">
+            <div className="mx-auto flex min-h-full max-w-7xl flex-col px-4 pb-8 md:px-8 lg:px-10">
               <InteractiveHoverLinks
                 aria-label={labels.navigation}
                 links={links}

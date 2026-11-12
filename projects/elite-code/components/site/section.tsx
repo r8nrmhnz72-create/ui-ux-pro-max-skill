@@ -36,7 +36,7 @@ export function Section({
 }: React.ComponentProps<"section"> & { id: string }) {
   return (
     <section id={id} aria-labelledby={`${id}-otsikko`} className={cn("scroll-mt-20 py-20 md:py-28", className)} {...rest}>
-      <div className="mx-auto w-full max-w-7xl px-4 md:px-8">{children}</div>
+      <div className="mx-auto w-full max-w-7xl px-4 md:px-8 lg:px-10">{children}</div>
     </section>
   );
 }

@@ -32,8 +32,14 @@ export const TIER_PRICES: Record<DishTier, string> = {
   5: "alk. 4 900 €",
 };
 
-function template(input: Omit<Template, "price" | "image">): Template {
-  return { ...input, price: TIER_PRICES[input.tier], image: `/plates/${input.id}.webp` };
+/** Each template has two pictures: a small one for the belt and a large one for its dialog. */
+function template(input: Omit<Template, "price" | "image" | "imageLarge">): Template {
+  return {
+    ...input,
+    price: TIER_PRICES[input.tier],
+    image: `/plates/${input.id}-sm.webp`,
+    imageLarge: `/plates/${input.id}.webp`,
+  };
 }
 
 export const templates: Template[] = [
@@ -182,7 +188,6 @@ export const site = {
       { value: "2–4 vk", label: "tyypillinen toimitusaika" },
       { value: TIER_PRICES[1], label: "alkaen, alv 0 %" },
     ],
-    scrollHint: "Vieritä alas",
   },
 
   belt: {
@@ -361,6 +366,7 @@ export const site = {
       retry: "Avaa sähköposti uudelleen",
     },
     failure: "Lähetys ei onnistunut. Yritä hetken kuluttua uudelleen tai kirjoita meille suoraan osoitteeseen",
+    busy: "Lähetyksiä on tullut lyhyessä ajassa liian monta. Odota hetki tai kirjoita meille suoraan osoitteeseen",
     mailSubject: "Tarjouspyyntö",
   },
 

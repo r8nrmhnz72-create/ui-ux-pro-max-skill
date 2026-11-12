@@ -12,7 +12,7 @@ export function SiteFooter() {
   const { footer, contact } = site;
   return (
     <footer data-page-content className="border-t border-border bg-background">
-      <div className="mx-auto w-full max-w-7xl px-4 pb-10 pt-20 md:px-8 md:pt-28">
+      <div className="mx-auto w-full max-w-7xl px-4 pb-10 pt-20 md:px-8 lg:px-10 md:pt-28">
         <Eyebrow>{footer.heading}</Eyebrow>
         <InteractiveHoverLinks aria-label={footer.navigation} links={site.nav} size="md" className="mt-4" />
 

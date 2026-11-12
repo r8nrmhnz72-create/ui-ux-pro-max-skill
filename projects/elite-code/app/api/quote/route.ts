@@ -8,7 +8,45 @@ import { templateLabel } from "@/content/site";
  * Without the variable the route answers 501 and the form falls back to opening the
  * visitor's e-mail client, so the site works before any backend is connected.
  */
+const WINDOW_MS = 10 * 60 * 1000;
+const MAX_PER_WINDOW = 5;
+const recent = new Map<string, number[]>();
+
+/**
+ * Best-effort flood guard: at most five requests per address in ten minutes.
+ * It lives in this server instance's memory, so on serverless hosting it only slows
+ * a burst down; put real rate limiting in front of the form backend if you need it.
+ */
+function tooMany(request: Request): boolean {
+  const address = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const now = Date.now();
+  const hits = (recent.get(address) ?? []).filter((time) => now - time < WINDOW_MS);
+  hits.push(now);
+  recent.set(address, hits);
+  if (recent.size > 5000) recent.clear();
+  return hits.length > MAX_PER_WINDOW;
+}
+
+/** Browsers send Origin on POST; a request from another site is not our form. */
+function crossSite(request: Request): boolean {
+  const origin = request.headers.get("origin");
+  if (!origin) return false;
+  const hosts = [request.headers.get("x-forwarded-host"), request.headers.get("host")].filter(Boolean);
+  try {
+    return !hosts.includes(new URL(origin).host);
+  } catch {
+    return true;
+  }
+}
+
 export async function POST(request: Request) {
+  if (crossSite(request)) {
+    return Response.json({ ok: false, error: "forbidden" }, { status: 403 });
+  }
+  if (tooMany(request)) {
+    return Response.json({ ok: false, error: "rate_limited" }, { status: 429 });
+  }
+
   let body: unknown;
   try {
     body = await request.json();

@@ -34,7 +34,7 @@ export function TemplateBelt() {
           </a>
         }
       />
-      <p className="mx-auto max-w-7xl px-4 pb-8 text-center text-xs text-muted-foreground md:px-8 lg:text-left">
+      <p className="mx-auto max-w-7xl px-4 pb-8 text-center text-xs text-muted-foreground md:px-8 lg:px-10 lg:text-left">
         {belt.legendNote}
       </p>
     </div>

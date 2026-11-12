@@ -24,7 +24,7 @@ export function Hero() {
         }}
       />
 
-      <div className="relative mx-auto w-full max-w-7xl px-4 pb-14 pt-32 md:px-8 md:pb-20">
+      <div className="relative mx-auto w-full max-w-7xl px-4 pb-14 pt-32 md:px-8 lg:px-10 md:pb-20">
         <Eyebrow className="flex items-center gap-3">
           <span aria-hidden="true" className="h-px w-8 bg-highlight" />
           {hero.eyebrow}

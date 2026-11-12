@@ -53,9 +53,9 @@ Komponentit ovat shadcn-käytännön mukaisesti kansiossa `components/ui/`.
 
 | Komponentti | Käyttö sivustolla | Muutokset alkuperäiseen |
 | --- | --- | --- |
-| `particle-wave.tsx` | Etusivun yläosan tausta | Piirtää läpinäkyvälle pohjalle ja ottaa värin teemasta, mitoittuu säiliönsä mukaan, pysähtyy näkymän ulkopuolella ja taustavälilehdessä, näyttää pysäytyskuvan kun käyttäjä on pyytänyt vähemmän liikettä, nopeus ei riipu näytön virkistystaajuudesta, ladataan vasta sivun jälkeen omana pakettinaan. |
+| `particle-wave.tsx` | Etusivun yläosan tausta | Piirtää läpinäkyvälle pohjalle ja ottaa värin teemasta, mitoittuu säiliönsä mukaan, pysähtyy näkymän ulkopuolella ja taustavälilehdessä, näyttää pysäytyskuvan kun käyttäjä on pyytänyt vähemmän liikettä tai laite ei jaksa animoida (ohjelmistorenderöinti, liian hidas ruudunpäivitys), nopeus ei riipu näytön virkistystaajuudesta, ladataan vasta sivun jälkeen omana pakettinaan. |
 | `interactive-hover-links.tsx` | Koko ruudun päävalikko ja alatunnisteen valikko | Linkit annetaan propsina, `onNavigate` sulkee valikon, otsikko luetaan ruudunlukijalle yhtenä sanana, näppäimistökohdistus saa saman tehosteen kuin hiiri, kaksi kokoa. |
-| `sushi-conveyor-menu.tsx` | Sivumallin valinta | Käytännössä sellaisenaan; lisätty kaksi käännettävää saavutettavuustekstiä (`labels.belt`, `labels.roleDescription`). |
+| `sushi-conveyor-menu.tsx` | Sivumallin valinta | Käytännössä sellaisenaan; lisätty kaksi käännettävää saavutettavuustekstiä (`labels.belt`, `labels.roleDescription`) ja valinnainen `imageLarge` tietoikkunan isolle kuvalle. |
 
 ## Tarjouslomake
 
@@ -80,9 +80,12 @@ joten ne voi tuottaa uudelleen:
 
 ```bash
 npm i -D playwright
-node scripts/art/render-plates.cjs   # public/plates/*.webp
+node scripts/art/render-plates.cjs   # public/plates/<id>.webp (880 px, mallin tietoikkuna)
+node scripts/art/resize-plates.cjs   # public/plates/<id>-sm.webp (360 px, hihna)
 node scripts/art/render-covers.cjs   # public/nav/*.webp, app/opengraph-image.png, app/apple-icon.png
 ```
+
+Hihna lataa lautasista pienet versiot; iso kuva haetaan vasta, kun kävijä nostaa mallin esiin.
 
 ## Rakenne
 

@@ -145,3 +145,25 @@
     translate: 0 0;
   }
 }
+
+/*
+ * FAQ: animate <details> open/close where the browser can size to `auto`
+ * (progressive enhancement; elsewhere the answer simply appears).
+ */
+@media (prefers-reduced-motion: no-preference) {
+  :root {
+    interpolate-size: allow-keywords;
+  }
+
+  .faq::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition:
+      block-size 360ms var(--ease-out-soft),
+      content-visibility 360ms allow-discrete;
+  }
+
+  .faq[open]::details-content {
+    block-size: auto;
+  }
+}

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Elite Code mark: two code chevrons closing into a cut gem. Drawn a little heavier than the
+       logo (stroke 2.3 on a 32 grid) so it holds together at 16 px. -->
+  <rect width="32" height="32" rx="7" fill="#0A0A0B"/>
+  <g fill="none" stroke="#E3B341" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14.35 9.3 7.65 16l6.7 6.7"/>
+    <path d="M17.65 9.3 24.35 16l-6.7 6.7"/>
+  </g>
+</svg>

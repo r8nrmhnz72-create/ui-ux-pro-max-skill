@@ -9,7 +9,7 @@ import { EMPTY_QUOTE, normalizeQuote, QUOTE_LIMITS, quoteSummary, validateQuote,
 import { useSelection } from "@/lib/selection";
 import { cn } from "@/lib/utils";
 
-type Status = "idle" | "sending" | "success" | "fallback" | "failure";
+type Status = "idle" | "sending" | "success" | "fallback" | "failure" | "busy";
 type TextField = "name" | "company" | "email" | "phone" | "message";
 
 const control =
@@ -123,7 +123,7 @@ export function QuoteForm() {
         window.location.href = mailto;
         return;
       }
-      setStatus("failure");
+      setStatus(response.status === 429 ? "busy" : "failure");
     } catch {
       setStatus("failure");
     }
@@ -352,9 +352,9 @@ export function QuoteForm() {
         </Button>
         <div aria-live="polite" className="text-sm">
           {hasErrors && <p className="text-destructive">{copy.errorSummary}</p>}
-          {status === "failure" && (
+          {(status === "failure" || status === "busy") && (
             <p className="text-destructive">
-              {copy.failure}{" "}
+              {status === "busy" ? copy.busy : copy.failure}{" "}
               <a href={mailto} className="font-medium underline underline-offset-4">
                 {site.contact.email}
               </a>

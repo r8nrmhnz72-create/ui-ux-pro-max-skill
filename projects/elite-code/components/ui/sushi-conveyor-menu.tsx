@@ -17,6 +17,11 @@ export interface ConveyorDish {
   tier?: DishTier;
   /** Top-down photo of the plate, centred on a transparent square canvas. */
   image: string;
+  /**
+   * Optional larger version of `image` for the dialog, so the belt can carry small files.
+   * It is fetched when the plate is picked out (hover, focus or tap), before the dialog opens.
+   */
+  imageLarge?: string;
   /** Short facts such as the piece count or allergens, listed as chips in the dialog. */
   details?: string[];
 }
@@ -576,6 +581,11 @@ export function SushiConveyorMenu({
   React.useEffect(() => { kick(); }, [active, paused, openIndex, reduced, speed, kick]);
 
   React.useEffect(() => {
+    const large = active === null ? undefined : items[active]?.imageLarge;
+    if (large) new Image().src = large;
+  }, [active, items]);
+
+  React.useEffect(() => {
     const node = sectionRef.current;
     const s = sim.current;
     let inView = true;
@@ -1064,7 +1074,14 @@ function DishDialog({ uid, item, index, total, labels, reduced, broken, source, 
               <span className="absolute inset-[30%] rounded-full bg-muted-foreground/25" />
             </span>
           ) : (
-            <img src={item.image} alt={item.name} draggable={false} className="relative size-full select-none object-contain" />
+            <img
+              src={item.imageLarge ?? item.image}
+              alt={item.name}
+              draggable={false}
+              className="relative size-full select-none bg-contain bg-center bg-no-repeat object-contain"
+              // Until the large picture arrives the small one, already on the belt, stands in for it.
+              style={item.imageLarge ? { backgroundImage: `url("${item.image}")` } : undefined}
+            />
           )}
           <span aria-hidden="true" className={`absolute -inset-[1.5%] rounded-full border-[3px] ${tier.ring}`} />
         </div>

@@ -82,8 +82,9 @@ function resolveColor(css: string, target: Vector3) {
 /**
  * A field of 40 000 points rolling as a wave, drawn with three.js on a transparent canvas.
  * The canvas fills its box (`block size-full` by default), so position it with `className`.
- * It pauses while off screen or in a background tab, holds a still frame under
- * `prefers-reduced-motion`, and hides itself when WebGL is unavailable.
+ * It pauses while off screen or in a background tab and holds a still frame under
+ * `prefers-reduced-motion`. Where the browser can only render in software, or the device
+ * cannot keep up, it also settles for a still frame; without WebGL it hides itself.
  */
 export function ParticleWave({
   className = "",
@@ -107,14 +108,30 @@ export function ParticleWave({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    // Ask for a hardware-accelerated context first. If the browser can only offer software
+    // rendering, take it but never animate: one still frame is cheap, sixty a second would
+    // keep the CPU busy for a decoration.
+    const attributes: WebGLContextAttributes = {
+      alpha: true,
+      antialias: true,
+      depth: false,
+      stencil: false,
+      premultipliedAlpha: true,
+      powerPreference: "low-power",
+    };
+    const context =
+      canvas.getContext("webgl2", { ...attributes, failIfMajorPerformanceCaveat: true }) ??
+      canvas.getContext("webgl2", attributes);
     let renderer: WebGLRenderer;
     try {
-      renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "low-power" });
+      if (!context) throw new Error("WebGL 2 is not available");
+      renderer = new WebGLRenderer({ canvas, context, alpha: true, antialias: true });
     } catch {
       // No WebGL (blocked, or an old GPU): step aside and let whatever is behind the canvas show.
       canvas.hidden = true;
       return;
     }
+    const constrained = context?.getContextAttributes()?.failIfMajorPerformanceCaveat !== true;
     renderer.setClearColor(0x000000, 0);
 
     const camera = new PerspectiveCamera(75, 1, 0.01, 1000);
@@ -156,7 +173,26 @@ export function ParticleWave({
     scene.add(particles);
 
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const state = { raf: 0, last: 0, inView: true, mx: 0, my: 0, tx: 0, ty: 0, ready: false, disposed: false };
+    const state = {
+      raf: 0,
+      last: 0,
+      inView: true,
+      mx: 0,
+      my: 0,
+      tx: 0,
+      ty: 0,
+      ready: false,
+      disposed: false,
+      started: false,
+      idle: 0,
+      /** Upper bound for the pixel ratio; lowered when frames come too slowly. */
+      ratioCap: 2,
+      /** Set when even the reduced resolution cannot hold a usable frame rate. */
+      frozen: false,
+      samples: 0,
+      elapsed: 0,
+      strikes: 0,
+    };
 
     const render = () => {
       camera.position.set(state.mx * 0.9, 6 + state.my * 0.35, 5);
@@ -178,10 +214,31 @@ export function ParticleWave({
       state.mx += (state.tx - state.mx) * ease;
       state.my += (state.ty - state.my) * ease;
       render();
+
+      // Frame-rate governor: two slow stretches in a row (below roughly 22 fps) first cost
+      // resolution, then the animation itself. The still frame stays.
+      state.samples += 1;
+      state.elapsed += dt;
+      if (state.samples >= 24) {
+        const slow = state.elapsed / state.samples > 0.045;
+        state.samples = 0;
+        state.elapsed = 0;
+        state.strikes = slow ? state.strikes + 1 : 0;
+        if (state.strikes >= 2) {
+          state.strikes = 0;
+          if (state.ratioCap > 1) {
+            state.ratioCap = 1;
+            sync();
+            return;
+          }
+          state.frozen = true;
+        }
+      }
       schedule();
     };
 
-    const running = () => state.inView && !document.hidden && !motion.matches && !state.disposed;
+    const running = () =>
+      state.started && state.inView && !document.hidden && !motion.matches && !constrained && !state.frozen && !state.disposed;
 
     function schedule() {
       if (state.raf || !running()) return;
@@ -194,12 +251,12 @@ export function ParticleWave({
       state.last = 0;
     };
 
-    const sync = () => {
-      if (state.disposed) return;
-      const width = canvas.clientWidth;
-      const height = canvas.clientHeight;
+    function sync() {
+      if (state.disposed || !state.started) return;
+      const width = canvas!.clientWidth;
+      const height = canvas!.clientHeight;
       if (width === 0 || height === 0) return;
-      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      const ratio = Math.min(window.devicePixelRatio || 1, state.ratioCap);
       renderer.setPixelRatio(ratio);
       renderer.setSize(width, height, false);
       camera.aspect = width / height;
@@ -207,7 +264,7 @@ export function ParticleWave({
       // Points are sized in device pixels, so scale with the pixel ratio and (gently) with the canvas height.
       uniforms.uSize.value = 15 * live.current.size * (1 + (ratio - 1) * 0.6) * Math.min(1.35, Math.max(0.75, height / 900));
       uniforms.uOpacity.value = live.current.opacity;
-      resolveColor(live.current.color ?? getComputedStyle(canvas).color, uniforms.uColor.value);
+      resolveColor(live.current.color ?? getComputedStyle(canvas!).color, uniforms.uColor.value);
       if (running()) schedule();
       else {
         halt();
@@ -217,7 +274,7 @@ export function ParticleWave({
         }
         render();
       }
-    };
+    }
     refresh.current = sync;
 
     const onVisibility = () => {
@@ -255,11 +312,23 @@ export function ParticleWave({
     scheme.addEventListener("change", sync);
     canvas.addEventListener("webglcontextlost", onContextLost);
     canvas.addEventListener("webglcontextrestored", onContextRestored);
-    sync();
+
+    // The first frame compiles the shaders; let the page finish its own work first.
+    const start = () => {
+      state.idle = 0;
+      state.started = true;
+      sync();
+    };
+    const idle = typeof window.requestIdleCallback === "function";
+    state.idle = idle ? window.requestIdleCallback(start, { timeout: 800 }) : window.setTimeout(start, 120);
 
     return () => {
       state.disposed = true;
       halt();
+      if (state.idle) {
+        if (idle) window.cancelIdleCallback(state.idle);
+        else window.clearTimeout(state.idle);
+      }
       refresh.current = () => {};
       resize.disconnect();
       intersection.disconnect();
