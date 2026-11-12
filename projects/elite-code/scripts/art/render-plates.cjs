@@ -136,7 +136,7 @@ const GLAZES = {
   },
   kauppa: {
     dark: false, rim: "#FBFBFD", rimHi: "#FFFFFF", rimLo: "#DFDFE8", well: "#F8F8FB", wellHi: "#FDFDFE", wellLo: "#ECECF3",
-    edgeHi: "#C2C3D0", edgeLo: "#9697A8", edgeW: 3.2, gloss: 0.85, grain: 0, pinstripe: "rgba(120,118,196,.34)",
+    edgeHi: "#B3B4C6", edgeLo: "#8D8EA3", edgeW: 3.2, gloss: 0.85, grain: 0, pinstripe: "rgba(120,118,196,.34)",
   },
   mittatilaus: {
     dark: true, rim: "#17171A", rimHi: "#313136", rimLo: "#09090A", well: "#111113", wellHi: "#1A1A1D", wellLo: "#0B0B0C",
@@ -235,6 +235,19 @@ function dishSvg() {
   </svg>`;
 }
 
+/** Small side bowl of herb oil; shares the #bowl glaze of the dish above. */
+function ramekinSvg() {
+  return `<svg class="ramekin" viewBox="0 0 96 96">
+    <ellipse cx="51" cy="53" rx="40" ry="39" fill="#0F2418" opacity=".55"/>
+    <circle cx="45" cy="45" r="40" fill="url(#bowl)"/>
+    <circle cx="45" cy="45" r="30.5" fill="#5F8F49"/>
+    <circle cx="45.6" cy="46" r="28" fill="#7FAE62"/>
+    <path d="M27 40a19 19 0 0 1 13-12" fill="none" stroke="#B9D9A0" stroke-width="4" stroke-linecap="round" opacity=".85"/>
+    <g fill="#3F6E33"><circle cx="54" cy="52" r="2"/><circle cx="44" cy="60" r="1.6"/><circle cx="60" cy="40" r="1.4"/></g>
+    <path d="M15 31a33 33 0 0 1 17-16" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+  </svg>`;
+}
+
 /** Abstract products for the shop grid, drawn on a 160 x 100 stage. */
 const PRODUCTS = [
   { bg: "#FFE2D4", price: "29 €", art: '<ellipse cx="80" cy="90" rx="34" ry="4.5" fill="#E9B9A2"/><circle cx="80" cy="60" r="28" fill="#E3674A"/><rect x="70" y="18" width="20" height="24" rx="4" fill="#E3674A"/><rect x="65" y="14" width="30" height="8" rx="4" fill="#C6513A"/><path d="M62 52a20 20 0 0 1 12-13" stroke="#FFB9A3" stroke-width="5" stroke-linecap="round" fill="none"/>' },
@@ -244,6 +257,30 @@ const PRODUCTS = [
   { bg: "#FFDCEA", price: "24 €", art: '<ellipse cx="80" cy="90" rx="32" ry="4.5" fill="#F0B4CC"/><path d="M80 8c7 8 9 13 9 17a9 9 0 0 1-18 0c0-4 2-9 9-17z" fill="#FFAE1F"/><rect x="78.8" y="30" width="2.4" height="10" fill="#4A2135"/><rect x="54" y="38" width="52" height="50" rx="9" fill="#E85C99"/><rect x="63" y="52" width="34" height="18" rx="4" fill="#FFEAF2"/>' },
   { bg: "#E5DFFA", price: "42 €", art: '<ellipse cx="80" cy="91" rx="30" ry="4.5" fill="#C3B9EC"/><g fill="#2FA46B"><ellipse cx="64" cy="34" rx="9" ry="19" transform="rotate(-30 64 34)"/><ellipse cx="96" cy="34" rx="9" ry="19" transform="rotate(30 96 34)"/></g><ellipse cx="80" cy="27" rx="8.5" ry="20" fill="#3DBB7E"/><path d="M58 56h44l-6 32H64z" fill="#7B5BF7"/><rect x="54" y="50" width="52" height="10" rx="4" fill="#6142E0"/>' },
 ];
+
+/**
+ * Yellow hero panel of the trades template with hazard stripes on its right end. The dark
+ * bands are cut out of the yellow (the page shows through) instead of being painted on top,
+ * so no yellow fringe is left along the rounded edge.
+ */
+function hazardSvg() {
+  const W = 552;
+  const H = 186;
+  const band = 19 * Math.SQRT2; // a 19 px band at 45 degrees, measured along the top edge
+  const top = 478; // where the striped zone starts on the top edge; it leans to `top - 46` at the bottom
+  let bands = "";
+  // Counted back from the bottom-right corner, so a full band covers that corner and no sliver is left at either end.
+  for (let end = W + H + 4; end > top; end -= 2 * band) {
+    bands += `M${(end - band).toFixed(1)} 0H${end.toFixed(1)}L${(end - H).toFixed(1)} ${H}H${(end - band - H).toFixed(1)}Z`;
+  }
+  return `<svg class="hazard" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
+    <defs>
+      <clipPath id="hz-zone"><path d="M${top} 0H${W}V${H}H${top - 46}z"/></clipPath>
+      <mask id="hz" maskUnits="userSpaceOnUse" x="0" y="0" width="${W}" height="${H}"><rect width="${W}" height="${H}" rx="10" fill="#fff"/><path d="${bands}" fill="#000" clip-path="url(#hz-zone)"/></mask>
+    </defs>
+    <rect width="${W}" height="${H}" fill="#FFC531" mask="url(#hz)"/>
+  </svg>`;
+}
 
 function calendar() {
   // May 2026 starts on a Friday (weeks run Monday to Sunday).
@@ -276,19 +313,19 @@ function blueprint() {
   for (let y = cy % 58; y <= H; y += 58) major += `M0 ${y.toFixed(1)}H${W}`;
   const inset = 26;
   const crop = [[inset, inset, -1, -1], [W - inset, inset, 1, -1], [inset, H - inset, -1, 1], [W - inset, H - inset, 1, 1]]
-    .map(([x, y, sx, sy]) => `M${x + sx * 6} ${y}h${sx * 13}M${x} ${y + sy * 6}v${sy * 13}`)
+    .map(([x, y, sx, sy]) => `M${x + sx * 7} ${y}h${sx * 15}M${x} ${y + sy * 7}v${sy * 15}`)
     .join("");
   const size = 188; // the chevron gem, drawn on its 24 grid
   const k = size / 24;
   const reg = (x, y) => `<circle cx="${x}" cy="${y}" r="4.6"/><path d="M${x - 8} ${y}h16M${x} ${y - 8}v16"/>`;
   return `<svg class="bp" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
-    <defs><radialGradient id="bpglow" cx="50%" cy="${((cy / H) * 100).toFixed(1)}%" r="62%"><stop offset="0" stop-color="${gold}" stop-opacity=".13"/><stop offset=".55" stop-color="${gold}" stop-opacity=".03"/><stop offset="1" stop-color="${gold}" stop-opacity="0"/></radialGradient></defs>
+    <defs><radialGradient id="bpglow" cx="50%" cy="${((cy / H) * 100).toFixed(1)}%" r="62%"><stop offset="0" stop-color="${gold}" stop-opacity=".2"/><stop offset=".55" stop-color="${gold}" stop-opacity=".06"/><stop offset="1" stop-color="${gold}" stop-opacity="0"/></radialGradient></defs>
     <rect width="${W}" height="${H}" fill="#0A0A0B"/>
     <rect width="${W}" height="${H}" fill="url(#bpglow)"/>
-    <path d="${minor}" stroke="${gold}" stroke-opacity=".1" stroke-width=".8" fill="none"/>
-    <path d="${major}" stroke="${gold}" stroke-opacity=".24" stroke-width=".9" fill="none"/>
+    <path d="${minor}" stroke="${gold}" stroke-opacity=".12" stroke-width=".8" fill="none"/>
+    <path d="${major}" stroke="${gold}" stroke-opacity=".32" stroke-width="1" fill="none"/>
     <rect x="${inset}" y="${inset}" width="${W - 2 * inset}" height="${H - 2 * inset}" fill="none" stroke="${gold}" stroke-opacity=".45" stroke-width=".9" stroke-dasharray="2.5 4"/>
-    <path d="${crop}" stroke="${gold}" stroke-width="1.6" fill="none" stroke-linecap="square"/>
+    <path d="${crop}" stroke="${gold}" stroke-width="2.6" fill="none" stroke-linecap="square"/>
     <g fill="none" stroke="${gold}" stroke-width="1" stroke-opacity=".8">${reg(cx, inset)}${reg(cx, H - inset)}</g>
     <g fill="none" stroke="${gold}" stroke-opacity=".55" stroke-width=".9">
       <circle cx="${cx}" cy="${cy}" r="128" stroke-dasharray="3 5"/>
@@ -315,9 +352,35 @@ function blueprint() {
   </svg>`;
 }
 
-/** Abstract person for the firm's cards. */
-const person = (bg, fg) =>
-  `<svg class="avatar" viewBox="0 0 48 48"><circle cx="24" cy="24" r="24" fill="${bg}"/><circle cx="24" cy="19" r="8" fill="${fg}"/><path d="M8 44a16 16 0 0 1 32 0v4H8z" fill="${fg}"/></svg>`;
+/** Flat, faceless portrait of the entrepreneur; the round frame comes from CSS. */
+function portraitSvg() {
+  return `<svg viewBox="0 0 150 150">
+    <path d="M12 152c2-31 27-47 63-47s61 16 63 47z" fill="#2B1712"/>
+    <path d="M52 108c7 9 39 9 46 0" fill="none" stroke="#FF6B4A" stroke-width="6" stroke-linecap="round"/>
+    <path d="M62 80h26v23c0 8-6 13-13 13s-13-5-13-13z" fill="#EFA57F"/>
+    <ellipse cx="75" cy="66" rx="25" ry="28.5" fill="#FBD2B2"/>
+    <circle cx="76" cy="27" r="12.5" fill="#2B1712"/>
+    <path d="M47 73C43 48 58 33 76 33s32 15 27 40c-3-11-9-19-18-22-10 8-24 8-31 10-4 3-6 7-7 12z" fill="#2B1712"/>
+  </svg>`;
+}
+
+/** Flat portraits for the firm's cards: one person per card, told apart by hair and suit. */
+const HAIR = {
+  short: '<path d="M16.3 20.6c-1-7.4 3-11.9 7.9-11.9 4.8 0 8.6 3.9 7.5 11.5-.9-3-2.4-5.2-4.6-6.2-3 2.2-6.8 2.4-8.8 3-.9.9-1.6 2.1-2 3.6z"/>',
+  bob: '<path d="M15.2 31.5c-2.2-11.7 1.2-22.9 8.8-22.9s11 11.2 8.8 22.9h-3.4c1.4-5.2 1.6-10.5.2-15-2.8.6-6.9-.4-9.4-2.6-1.2 2-2.6 3.3-3.6 4.2-.4 4.5-.2 9.1 1 13.4z"/>',
+  crop: '<path d="M16.5 19.2c-.5-6.6 3.1-10.4 7.7-10.4 4.4 0 7.9 3.6 7.4 10.2-1.2-2.7-3.2-4.4-5.6-4.9-3.4.4-6.6 1.5-9.5 5.1z"/>',
+};
+let avatarId = 0;
+function person({ bg, suit, shirt, skin, shade, hair, style }) {
+  const id = `av${++avatarId}`;
+  return `<svg class="avatar" viewBox="0 0 48 48"><defs><clipPath id="${id}"><circle cx="24" cy="24" r="24"/></clipPath></defs>
+    <g clip-path="url(#${id})"><rect width="48" height="48" fill="${bg}"/>
+    <path d="M4.5 50c1-12.5 8.2-17.8 19.5-17.8S42.5 37.5 43.5 50z" fill="${suit}"/>
+    <path d="M19.4 32.6 24 40.4l4.6-7.8z" fill="${shirt}"/>
+    <path d="M20.3 24h7.4v7.6a3.7 3.7 0 0 1-7.4 0z" fill="${shade}"/>
+    <ellipse cx="24" cy="19.6" rx="7.5" ry="8.5" fill="${skin}"/>
+    <g fill="${hair}">${HAIR[style]}</g></g></svg>`;
+}
 
 const MOCKS = {
   kipina: {
@@ -328,7 +391,7 @@ const MOCKS = {
         <h1>Hei, olen<br>yrittäjä.</h1>
         <p class="lead">Teen työni huolella ja ajallaan.</p>
         <span class="btn">Ota yhteyttä<i>${icon(ICONS.arrow, 15, 2.4)}</i></span>
-        <div class="portrait"><i class="head"></i><i class="body"></i></div>
+        <div class="portrait">${portraitSvg()}</div>
         ${icon(ICONS.spark, 26, 0, 'class="s1"')}${icon(ICONS.spark, 15, 0, 'class="s2"')}
       </div>
       <div class="row" style="top:278px"><i class="ic">${icon(ICONS.spark, 15, 0)}</i><b>Mitä teen</b><span class="ln" style="width:170px"></span><em>${icon(ICONS.arrow, 14, 2.2)}</em></div>
@@ -340,7 +403,7 @@ const MOCKS = {
     html: `
       <div class="nav"><span class="logo"><i></i>PAJA</span><span class="links"><span>Palvelut</span><span>Työnäytteet</span><span>Yhteys</span></span><span class="tel">${icon(ICONS.phone, 13, 2.1)}Soita</span></div>
       <div class="hero">
-        <div class="stripes"></div>
+        ${hazardSvg()}
         <h1>Remontit<br>avaimet käteen</h1>
         <span class="cta">${icon(ICONS.phone, 17, 2)}Soita meille</span>
         <span class="more">Katso työt</span>
@@ -355,7 +418,7 @@ const MOCKS = {
       <div class="left">
         <span class="brand">Kattaus</span>
         ${dishSvg()}
-        <i class="ramekin"></i>
+        ${ramekinSvg()}
         <span class="hours">Avoinna ti–su</span>
       </div>
       <div class="right">
@@ -410,9 +473,9 @@ const MOCKS = {
         <p class="lead">Asiantuntemusta, johon voi luottaa.</p>
       </div>
       <div class="cards">
-        <div class="pc">${person("#12213F", "#F6F1E6")}<b>Kirjanpito</b><i></i><i class="short"></i><span>Lue lisää ${icon(ICONS.arrow, 12, 2.2)}</span></div>
-        <div class="pc">${person("#C8A45A", "#FFF9EC")}<b>Juridiikka</b><i></i><i class="short"></i><span>Lue lisää ${icon(ICONS.arrow, 12, 2.2)}</span></div>
-        <div class="pc">${person("#8496B8", "#F6F1E6")}<b>Neuvonta</b><i></i><i class="short"></i><span>Lue lisää ${icon(ICONS.arrow, 12, 2.2)}</span></div>
+        <div class="pc">${person({ bg: "#12213F", suit: "#3A5594", shirt: "#F6F1E6", skin: "#F0CDB0", shade: "#D9AC8B", hair: "#D2AF66", style: "short" })}<b>Kirjanpito</b><i></i><i class="short"></i><span>Lue lisää ${icon(ICONS.arrow, 12, 2.2)}</span></div>
+        <div class="pc">${person({ bg: "#C8A45A", suit: "#12213F", shirt: "#FFF9EC", skin: "#F6D9C0", shade: "#E0B796", hair: "#3B2416", style: "bob" })}<b>Juridiikka</b><i></i><i class="short"></i><span>Lue lisää ${icon(ICONS.arrow, 12, 2.2)}</span></div>
+        <div class="pc">${person({ bg: "#8496B8", suit: "#F6F1E6", shirt: "#12213F", skin: "#E3B693", shade: "#C89874", hair: "#1A2748", style: "crop" })}<b>Neuvonta</b><i></i><i class="short"></i><span>Lue lisää ${icon(ICONS.arrow, 12, 2.2)}</span></div>
       </div>`,
   },
   kauppa: {
@@ -442,8 +505,7 @@ const MOCK_CSS = `
 .m-kipina .btn{position:absolute;left:24px;top:203px;height:41px;padding:0 8px 0 21px;border-radius:21px;background:#2B1712;color:#FFF8F0;font:600 17.5px "Geist";letter-spacing:-.01em;display:flex;align-items:center;gap:13px}
 .m-kipina .btn i{width:27px;height:27px;border-radius:50%;background:#FF6B4A;color:#2B1712;display:grid;place-items:center}
 .m-kipina .portrait{position:absolute;right:34px;top:66px;width:150px;height:150px;border-radius:50%;background:#FFC857;overflow:hidden;box-shadow:0 0 0 6px #FFF8F0}
-.m-kipina .portrait .head{position:absolute;left:50%;top:31px;width:52px;height:52px;margin-left:-26px;border-radius:50%;background:#FFF8F0}
-.m-kipina .portrait .body{position:absolute;left:50%;top:92px;width:124px;height:124px;margin-left:-62px;border-radius:50%;background:#2B1712}
+.m-kipina .portrait svg{display:block;width:100%;height:100%}
 .m-kipina .s1,.m-kipina .s2{position:absolute;fill:#FFF8F0;stroke:none}
 .m-kipina .s1{right:186px;top:60px}
 .m-kipina .s2{right:22px;top:206px;fill:#FFD166}
@@ -462,11 +524,11 @@ const MOCK_CSS = `
 .m-paja .logo i{width:21px;height:21px;border-radius:4px;background:#FFC531 linear-gradient(135deg,transparent 0 38%,#17181A 38% 62%,transparent 62%)}
 .m-paja .links{margin-left:24px;display:flex;gap:16px;font:500 12.5px "Geist";color:#A9ABB1}
 .m-paja .tel{margin-left:auto;height:26px;box-sizing:border-box;padding:0 12px 0 9px;border:1.5px solid #FFC531;border-radius:13px;color:#FFC531;font:600 12.5px "Geist";display:flex;gap:6px;align-items:center}
-.m-paja .hero{position:absolute;left:14px;top:47px;width:552px;height:186px;border-radius:10px;background:#FFC531;overflow:hidden;color:#17181A}
+.m-paja .hero{position:absolute;left:14px;top:47px;width:552px;height:186px;color:#17181A}
+.m-paja .hazard{position:absolute;left:0;top:0;display:block}
 .m-paja .hero h1{position:absolute;left:22px;top:17px;margin:0;font:700 62px/.9 "Barlow Condensed";text-transform:uppercase;letter-spacing:-.005em}
 .m-paja .cta{position:absolute;left:22px;bottom:17px;height:39px;border-radius:20px;background:#17181A;color:#FFC531;padding:0 19px 0 14px;display:flex;align-items:center;gap:8px;font:600 16.5px "Geist"}
 .m-paja .more{position:absolute;left:196px;bottom:27px;font:600 13.5px "Geist";border-bottom:1.5px solid #17181A;padding-bottom:1px}
-.m-paja .stripes{position:absolute;right:0;top:0;bottom:0;width:132px;background:repeating-linear-gradient(-45deg,#17181A 0 19px,transparent 19px 38px);clip-path:polygon(34% 0,100% 0,100% 100%,0 100%)}
 .m-paja .svc{position:absolute;left:14px;width:552px;height:46px;box-sizing:border-box;border-radius:9px;background:#232529;border:1px solid #33363B;display:flex;align-items:center;padding:0 13px 0 8px;gap:12px}
 .m-paja .svc i{flex:none;width:30px;height:30px;border-radius:7px;background:#FFC531;color:#17181A;display:grid;place-items:center}
 .m-paja .svc b{font:600 16.5px "Geist";letter-spacing:-.01em;min-width:150px}
@@ -480,7 +542,7 @@ const MOCK_CSS = `
 .m-kattaus .left::before{content:"";position:absolute;inset:0;background:radial-gradient(90% 70% at 30% 30%,#2B5239,transparent 70%)}
 .m-kattaus .brand{position:absolute;left:20px;top:12px;font:italic 400 24px "Instrument Serif";color:#F5EDDA}
 .m-kattaus .dish{position:absolute;left:18px;top:74px;width:216px;height:216px}
-.m-kattaus .ramekin{position:absolute;left:176px;top:300px;width:86px;height:86px;border-radius:50%;background:radial-gradient(circle at 40% 36%,#86B36B 0 44%,#5E8F4A 45% 52%,#F5EDDA 53% 100%);box-shadow:5px 7px 0 rgba(15,36,24,.5)}
+.m-kattaus .ramekin{position:absolute;left:150px;top:300px;width:90px;height:90px}
 .m-kattaus .hours{position:absolute;left:21px;bottom:17px;font:500 9.5px "Geist Mono";letter-spacing:.18em;text-transform:uppercase;color:#F5EDDA;opacity:.78}
 .m-kattaus .right{position:absolute;left:250px;top:0;right:0;bottom:0}
 .m-kattaus .right .nav{position:absolute;left:24px;right:16px;top:11px;display:flex;align-items:center;gap:15px;font:500 12.5px "Geist";color:#40604D}
@@ -573,7 +635,7 @@ const MOCK_CSS = `
 .m-toimisto .brand i{width:8px;height:8px;transform:rotate(45deg);background:#C8A45A}
 .m-toimisto .links{margin-left:auto;display:flex;gap:15px;font:500 12px "Geist";color:rgba(246,241,230,.76)}
 .m-toimisto .cta{margin-left:16px;height:26px;box-sizing:border-box;padding:0 11px;border:1px solid rgba(246,241,230,.55);border-radius:3px;font:600 11.5px "Geist";display:flex;align-items:center}
-.m-toimisto .eyebrow{position:absolute;left:23px;top:64px;font:500 9.5px "Geist Mono";letter-spacing:.18em;color:#D2AF66}
+.m-toimisto .eyebrow{position:absolute;left:23px;top:60px;font:500 9.5px "Geist Mono";letter-spacing:.18em;color:#D2AF66}
 .m-toimisto h1{position:absolute;left:19px;top:74px;margin:0;font:400 92px/1 "Instrument Serif";letter-spacing:-.02em}
 .m-toimisto .lead{position:absolute;left:23px;top:170px;margin:0;font:400 14px "Geist";color:rgba(246,241,230,.8)}
 .m-toimisto .arches{position:absolute;right:22px;top:54px;bottom:0;width:176px}
@@ -610,7 +672,7 @@ const MOCK_CSS = `
 .m-kauppa .add{position:absolute;right:9px;bottom:8px;width:25px;height:25px;border-radius:50%;background:#5B5BF0;color:#fff;display:grid;place-items:center}
 
 /* 8 — Mittatilaus: gold blueprint on black */
-.m-mittatilaus{--ch-bg:#0E0E0F;--ch-line:rgba(227,179,65,.34);--ch-dot:transparent;--ch-pill:transparent;--side:#000;--line:rgba(227,179,65,.8);--line-w:1.5px}
+.m-mittatilaus{--ch-bg:#0E0E0F;--ch-line:rgba(227,179,65,.34);--ch-dot:transparent;--ch-pill:transparent;--side:#000;--line:rgba(227,179,65,.92);--line-w:2px}
 .m-mittatilaus .chrome i{box-shadow:inset 0 0 0 1.2px rgba(227,179,65,.8)}
 .m-mittatilaus .chrome .url{box-shadow:inset 0 0 0 1px rgba(227,179,65,.4)}
 .m-mittatilaus .chrome .url b{background:rgba(227,179,65,.7)}

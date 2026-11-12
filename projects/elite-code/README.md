@@ -54,8 +54,8 @@ Komponentit ovat shadcn-käytännön mukaisesti kansiossa `components/ui/`.
 | Komponentti | Käyttö sivustolla | Muutokset alkuperäiseen |
 | --- | --- | --- |
 | `particle-wave.tsx` | Etusivun yläosan tausta | Piirtää läpinäkyvälle pohjalle ja ottaa värin teemasta, mitoittuu säiliönsä mukaan, pysähtyy näkymän ulkopuolella ja taustavälilehdessä, näyttää pysäytyskuvan kun käyttäjä on pyytänyt vähemmän liikettä tai laite ei jaksa animoida (ohjelmistorenderöinti, liian hidas ruudunpäivitys), nopeus ei riipu näytön virkistystaajuudesta, ladataan vasta sivun jälkeen omana pakettinaan. |
-| `interactive-hover-links.tsx` | Koko ruudun päävalikko ja alatunnisteen valikko | Linkit annetaan propsina, `onNavigate` sulkee valikon, otsikko luetaan ruudunlukijalle yhtenä sanana, näppäimistökohdistus saa saman tehosteen kuin hiiri, kaksi kokoa. |
-| `sushi-conveyor-menu.tsx` | Sivumallin valinta | Käytännössä sellaisenaan; lisätty kaksi käännettävää saavutettavuustekstiä (`labels.belt`, `labels.roleDescription`) ja valinnainen `imageLarge` tietoikkunan isolle kuvalle. |
+| `interactive-hover-links.tsx` | Koko ruudun päävalikko ja alatunnisteen valikko | Linkit annetaan propsina, `onNavigate` sulkee valikon, otsikko luetaan ruudunlukijalle yhtenä sanana, näppäimistökohdistus saa saman tehosteen kuin hiiri, kolme kokoa (`fit` skaalautuu ruudun korkeuteen), kuva ei näy puhelinleveydellä tekstin päällä. |
+| `sushi-conveyor-menu.tsx` | Sivumallin valinta | Toiminta sellaisenaan. Lisätty: käännettävät saavutettavuustekstit (`labels.belt`, `labels.roleDescription`), valinnainen `imageLarge` tietoikkunan isolle kuvalle, ruudunlukijan ilmoitukset pois automaattiesittelyn ajaksi, näkyvä kohdistuskehys lautasille, korkea tietoikkuna vierittyy pienellä näytöllä, 44 px:n painikkeet kosketusnäytöllä. |
 
 ## Tarjouslomake
 
@@ -73,6 +73,11 @@ Jos muuttujaa ei ole asetettu, reitti vastaa `501` ja lomake avaa valmiiksi täy
 sähköpostiohjelmaan. Sivusto siis toimii jo ennen kuin lomakepalvelu on kytketty, mutta pyynnöt tulevat
 silloin perille vain, jos kävijä lähettää sähköpostin itse.
 
+Reitti hylkää toiselta sivustolta tulevat pyynnöt, yli 32 kt:n rungot ja yli viisi pyyntöä kymmenessä
+minuutissa samasta osoitteesta. Pyyntörajoitus on palvelinprosessin muistissa ja luottaa välityspalvelimen
+asettamaan osoitteeseen (`x-real-ip` tai `x-forwarded-for`-ketjun viimeinen arvo), joten se on kevyt
+ensisuoja: varsinainen roskapostin torjunta kannattaa tehdä lomakepalvelussa tai reunapalvelimella.
+
 ## Kuvitus
 
 Hihnan lautaset, valikon kuvat, jakokuva ja kuvakkeet on piirretty koodilla (HTML/CSS → Chromium → WebP/PNG),
@@ -86,6 +91,10 @@ node scripts/art/render-covers.cjs   # public/nav/*.webp, app/opengraph-image.pn
 ```
 
 Hihna lataa lautasista pienet versiot; iso kuva haetaan vasta, kun kävijä nostaa mallin esiin.
+
+Kahdessa kuvassa on tekstiä, joka ei päivity sisältötiedostosta: valikon Hinnasto-kuvassa lukee
+alin hinta ("690 €", funktio `coverHinnasto()`), ja jakokuvassa on etusivun pääotsikko. Jos muutat
+niitä, muuta teksti myös tiedostossa `scripts/art/render-covers.cjs` ja aja skripti uudelleen.
 
 ## Rakenne
 

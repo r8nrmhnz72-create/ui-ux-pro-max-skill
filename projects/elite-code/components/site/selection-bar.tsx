@@ -23,7 +23,13 @@ export function SelectionBar() {
   React.useEffect(() => {
     const target = document.getElementById("tarjous");
     if (!target || typeof IntersectionObserver !== "function") return;
-    const observer = new IntersectionObserver(([entry]) => setFormInView(entry.isIntersecting), { threshold: 0.12 });
+    // Away while the form is on screen and also once it has been passed: only the footer follows,
+    // and the bar would sit on top of its links. The observer's root is stretched far upwards, so
+    // "above the viewport" counts as intersecting too, even after a jump straight to the page end.
+    const observer = new IntersectionObserver(([entry]) => setFormInView(entry.isIntersecting), {
+      rootMargin: "100000px 0px 0px 0px",
+      threshold: 0.12,
+    });
     observer.observe(target);
     return () => observer.disconnect();
   }, []);
@@ -47,12 +53,15 @@ export function SelectionBar() {
             className="pointer-events-auto flex w-full max-w-xl items-center gap-3 rounded-full border border-border bg-card/95 py-2 pl-2 pr-2 shadow-2xl backdrop-blur-md"
           >
             {/* eslint-disable-next-line @next/next/no-img-element -- tiny decorative thumbnail of an already-loaded plate */}
-            <img src={item.image} alt="" width={44} height={44} className="size-11 shrink-0 rounded-full" />
-            <p className="min-w-0 flex-1 leading-tight">
-              <span className="block text-[11px] uppercase tracking-[0.18em] text-muted-foreground">{copy.label}</span>
+            <img src={item.image} alt="" width={44} height={44} className="hidden size-11 shrink-0 rounded-full sm:block" />
+            {/* Phones: no thumbnail or label, name and price on two lines, so nothing is cut off. */}
+            <p className="min-w-0 flex-1 pl-3 leading-tight sm:pl-0">
+              <span className="hidden text-[11px] uppercase tracking-[0.18em] text-muted-foreground sm:block">{copy.label}</span>
               <span className="block truncate text-sm font-medium">
-                {item.name} <span className="font-normal tabular-nums text-muted-foreground">· {item.price}</span>
+                {item.name}
+                <span className="hidden font-normal tabular-nums text-muted-foreground sm:inline"> · {item.price}</span>
               </span>
+              <span className="block text-xs tabular-nums text-muted-foreground sm:hidden">{item.price}</span>
             </p>
             <a href="#tarjous" className={cn(buttonVariants({ variant: "accent", size: "sm" }), "group h-11 px-4")}>
               {copy.cta}

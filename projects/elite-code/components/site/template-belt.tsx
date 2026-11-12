@@ -17,7 +17,6 @@ export function TemplateBelt() {
     <div className="border-y border-border">
       <SushiConveyorMenu
         id="mallit"
-        className="scroll-mt-16 md:scroll-mt-20"
         items={templates}
         legend={TIER_PRICES}
         eyebrow={belt.eyebrow}

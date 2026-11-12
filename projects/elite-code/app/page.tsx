@@ -1,5 +1,3 @@
-import { Suspense } from "react";
-
 import { Hero } from "@/components/site/hero";
 import { Faq, Pricing, Process, Quote, Service } from "@/components/site/sections";
 import { SelectionBar } from "@/components/site/selection-bar";
@@ -48,21 +46,13 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
       <Hero />
-      {/* Each boundary hydrates as its own unit of work, so the interactive islands below
-          the fold do not hold up the first interaction. */}
-      <Suspense>
-        <TemplateBelt />
-      </Suspense>
+      <TemplateBelt />
       <Service />
       <Process />
       <Pricing />
       <Faq />
-      <Suspense>
-        <Quote />
-      </Suspense>
-      <Suspense>
-        <SelectionBar />
-      </Suspense>
+      <Quote />
+      <SelectionBar />
     </SelectionProvider>
   );
 }

@@ -58,7 +58,8 @@
   --highlight: #7d5a00;
   --destructive: #b42318;
   --border: #dddbd3;
-  --input: #c9c7be;
+  /* Field outlines: at least 3:1 against both the page and card surfaces. */
+  --input: #85837a;
   --ring: #0b0b0c;
   /* Price tiers 1–5, cool to warm, ending in the brand gold. */
   --chart-1: #5b6b8c;
@@ -88,7 +89,7 @@
   --highlight: #e3b341;
   --destructive: #ff8a80;
   --border: #2a2a2e;
-  --input: #3a3a3f;
+  --input: #707078;
   --ring: #e3b341;
   --chart-1: #8a9bbf;
   --chart-2: #3fb8a6;
@@ -105,6 +106,8 @@
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 5.5rem;
+    /* Keeps focused controls clear of the floating selection bar. */
+    scroll-padding-bottom: 6rem;
     scrollbar-gutter: stable;
     -webkit-text-size-adjust: 100%;
   }
@@ -124,6 +127,17 @@
       scroll-behavior: auto;
     }
   }
+}
+
+/*
+ * Copy that sits directly on the particle wave gets a soft halo in the page colour, so a
+ * particle drifting behind a word never costs legibility, at any viewport width.
+ */
+.text-halo {
+  text-shadow:
+    0 0 0.4rem var(--background),
+    0 0 1rem var(--background),
+    0 0 1.75rem var(--background);
 }
 
 /*
@@ -165,5 +179,16 @@
 
   .faq[open]::details-content {
     block-size: auto;
+  }
+}
+
+/*
+ * Focus rings here are box-shadows, which forced-colors mode (Windows High Contrast) drops.
+ * Give every focusable element a real outline there. Unlayered on purpose, so it wins over utilities.
+ */
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
   }
 }

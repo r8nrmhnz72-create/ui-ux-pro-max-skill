@@ -32,22 +32,34 @@ export const EMPTY_QUOTE: QuoteRequest = {
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const PHONE = /^\+?[\d\s()-]{5,}$/;
 
+/** Single-line field: control characters and line breaks become spaces, so a value can never
+ *  smuggle extra lines into an e-mail subject or the forwarded summary. */
+function line(value: unknown, max: number): string {
+  return typeof value === "string" ? value.replace(/[\u0000-\u001f\u007f]+/g, " ").trim().slice(0, max) : "";
+}
+
+/** Multi-line field: keeps tabs and line breaks, drops every other control character. */
 function text(value: unknown, max: number): string {
-  return typeof value === "string" ? value.trim().slice(0, max) : "";
+  if (typeof value !== "string") return "";
+  return value
+    .replace(/\r\n?/g, "\n")
+    .replace(/[\u0000-\u0008\u000b-\u001f\u007f]+/g, "")
+    .trim()
+    .slice(0, max);
 }
 
 /** Coerces untrusted input (form state or a JSON body) into a QuoteRequest with trimmed, length-capped strings. */
 export function normalizeQuote(input: unknown): QuoteRequest {
   const source = (typeof input === "object" && input !== null ? input : {}) as Record<string, unknown>;
   return {
-    name: text(source.name, QUOTE_LIMITS.name),
-    email: text(source.email, QUOTE_LIMITS.email),
-    phone: text(source.phone, QUOTE_LIMITS.phone),
-    company: text(source.company, QUOTE_LIMITS.company),
-    template: text(source.template, QUOTE_LIMITS.template),
+    name: line(source.name, QUOTE_LIMITS.name),
+    email: line(source.email, QUOTE_LIMITS.email),
+    phone: line(source.phone, QUOTE_LIMITS.phone),
+    company: line(source.company, QUOTE_LIMITS.company),
+    template: line(source.template, QUOTE_LIMITS.template),
     message: text(source.message, QUOTE_LIMITS.message),
     consent: source.consent === true,
-    website: text(source.website, 200),
+    website: line(source.website, 200),
   };
 }
 

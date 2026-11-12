@@ -73,14 +73,25 @@ export function QuoteForm() {
   const [values, setValues] = React.useState(EMPTY_QUOTE);
   const [errors, setErrors] = React.useState<QuoteErrors>({});
   const [status, setStatus] = React.useState<Status>("idle");
+  const [copied, setCopied] = React.useState(false);
   const resultRef = React.useRef<HTMLDivElement>(null);
+  const announced = React.useRef<Status>("idle");
 
   const quote = normalizeQuote({ ...values, template: selectedId ?? "" });
   const mailto = `mailto:${site.contact.email}?subject=${encodeURIComponent(`${copy.mailSubject}: ${templateLabel(quote.template)}`)}&body=${encodeURIComponent(quoteSummary(quote, templateLabel(quote.template)))}`;
 
+  // Move focus to the result card when the outcome arrives, but not when the page is merely
+  // shown again (Next keeps it mounted across navigations and re-runs effects).
   React.useEffect(() => {
-    if (status === "success" || status === "fallback") resultRef.current?.focus();
+    const changed = announced.current !== status;
+    announced.current = status;
+    if (changed && (status === "success" || status === "fallback")) resultRef.current?.focus();
   }, [status]);
+
+  /** The form has just been put back on screen: continue from its first field. */
+  const focusForm = () => {
+    requestAnimationFrame(() => document.getElementById(fieldId("name"))?.focus());
+  };
 
   const set = (name: TextField) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setValues((old) => ({ ...old, [name]: event.target.value }));
@@ -105,6 +116,8 @@ export function QuoteForm() {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(quote),
+        // A stalled connection must not leave the form on "Lähetetään…" for minutes.
+        signal: AbortSignal.timeout(15000),
       });
       if (response.ok) {
         setStatus("success");
@@ -133,6 +146,23 @@ export function QuoteForm() {
     setValues(EMPTY_QUOTE);
     setErrors({});
     setStatus("idle");
+    focusForm();
+  };
+
+  /** Back from the e-mail hand-over with everything the visitor wrote still in place. */
+  const backToForm = () => {
+    setCopied(false);
+    setStatus("idle");
+    focusForm();
+  };
+
+  const copyMessage = async () => {
+    try {
+      await navigator.clipboard.writeText(quoteSummary(quote, templateLabel(quote.template)));
+      setCopied(true);
+    } catch {
+      // Clipboard access denied: the e-mail link above still carries the full message.
+    }
   };
 
   if (status === "success" || status === "fallback") {
@@ -162,14 +192,23 @@ export function QuoteForm() {
           </p>
         )}
         <div className="mt-2 flex flex-wrap gap-3">
-          {!success && (
-            <a href={mailto} className={buttonVariants()}>
-              {copy.fallback.retry}
-            </a>
+          {success ? (
+            <Button variant="outline" onClick={reset}>
+              {copy.success.again}
+            </Button>
+          ) : (
+            <>
+              <a href={mailto} className={buttonVariants()}>
+                {copy.fallback.retry}
+              </a>
+              <Button variant="outline" onClick={copyMessage}>
+                {copied ? copy.fallback.copied : copy.fallback.copy}
+              </Button>
+              <Button variant="ghost" onClick={backToForm}>
+                {copy.fallback.back}
+              </Button>
+            </>
           )}
-          <Button variant="outline" onClick={reset}>
-            {copy.success.again}
-          </Button>
         </div>
       </div>
     );
@@ -346,7 +385,14 @@ export function QuoteForm() {
       </div>
 
       <div className="flex flex-col gap-4 pt-2 sm:flex-row sm:items-center">
-        <Button type="submit" variant="accent" size="lg" disabled={status === "sending"} className="group">
+        {/* aria-disabled, not disabled: a disabled button would drop keyboard focus mid-submit. */}
+        <Button
+          type="submit"
+          variant="accent"
+          size="lg"
+          aria-disabled={status === "sending"}
+          className="group aria-disabled:pointer-events-none aria-disabled:opacity-50"
+        >
           {status === "sending" ? copy.sending : copy.submit}
           <ArrowRight aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none" />
         </Button>

@@ -1,7 +1,7 @@
-import { Suspense } from "react";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 
+import { HashHistorySync } from "@/components/site/hash-history-sync";
 import { RevealObserver } from "@/components/site/reveal-observer";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteHeader } from "@/components/site/site-header";
@@ -37,23 +37,25 @@ export const metadata: Metadata = {
   formatDetection: { telephone: false },
 };
 
-export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0b" },
-    { media: "(prefers-color-scheme: light)", color: "#faf9f6" },
-  ],
-};
+// The site theme does not follow the OS setting, so neither does the browser toolbar colour:
+// it starts dark and the theme toggle keeps it in step (components/site/theme-toggle.tsx).
+export const viewport: Viewport = { themeColor: "#0a0a0b" };
 
 /**
  * Runs before first paint: flags that JavaScript is available (enables scroll reveals) and
  * applies a stored light-theme choice. Dark is the default the server renders.
+ *
+ * Failsafe: if the app has not confirmed it is running within four seconds (bundle blocked
+ * or failed), the flag is withdrawn so nothing stays hidden waiting for a reveal.
  */
-const bootScript = `(function(){var r=document.documentElement;r.classList.add("js");try{if(localStorage.getItem("theme")==="light")r.classList.remove("dark")}catch(e){}})()`;
+const bootScript = `(function(){var r=document.documentElement;r.classList.add("js");setTimeout(function(){if(!r.hasAttribute("data-reveal-ready"))r.classList.remove("js")},4000);try{if(localStorage.getItem("theme")==="light")r.classList.remove("dark")}catch(e){}})()`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="fi"
+      // Next 16: keeps smooth scrolling for in-page links but not for route changes.
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} dark h-full antialiased`}
     >
@@ -63,7 +65,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col font-sans">
         <a
           href="#sisalto"
-          className="sr-only z-50 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+          className="fixed left-4 top-4 z-50 -translate-y-24 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground outline-none transition-transform duration-200 focus:translate-y-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none"
         >
           {site.labels.skip}
         </a>
@@ -71,10 +73,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <main id="sisalto" data-page-content className="flex-1">
           {children}
         </main>
-        <Suspense>
-          <SiteFooter />
-        </Suspense>
+        <SiteFooter />
         <RevealObserver />
+        <HashHistorySync />
       </body>
     </html>
   );

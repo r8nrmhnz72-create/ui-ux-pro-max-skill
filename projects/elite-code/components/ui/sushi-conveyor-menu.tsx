@@ -742,7 +742,7 @@ export function SushiConveyorMenu({
   const roving = active ?? center;
   const tiers = legendEntries(items, legend);
   const g = geo;
-  const control = "inline-flex size-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none";
+  const control = "inline-flex size-8 pointer-coarse:size-11 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none";
 
   const header = (eyebrow || heading || tiers.length > 0) && (
     <div className={wide ? "flex flex-col items-start gap-4 text-left" : "flex flex-col items-center gap-2 px-2 text-center"}>
@@ -762,7 +762,7 @@ export function SushiConveyorMenu({
   );
 
   const captionNode = (
-    <div id={`${uid}-caption`} aria-live="polite" data-caption className={wide ? "min-h-[3.25rem]" : `mx-auto mt-2 max-w-md px-2 text-center ${narrow ? "min-h-[3.75rem]" : "min-h-[2.75rem]"}`}>
+    <div id={`${uid}-caption`} aria-live={playing ? "off" : "polite"} data-caption className={wide ? "min-h-[3.25rem]" : `mx-auto mt-2 max-w-md px-2 text-center ${narrow ? "min-h-[3.75rem]" : "min-h-[2.75rem]"}`}>
       <p className={`text-sm ${current ? "font-medium text-foreground" : "text-muted-foreground"}`}>
         {current ? <>{current.name} <span className="font-normal tabular-nums text-muted-foreground">· {current.price}</span></> : caption}
       </p>
@@ -862,7 +862,7 @@ export function SushiConveyorMenu({
             aria-describedby={`${uid}-caption`}
             aria-haspopup="dialog"
             aria-current={isActive || undefined}
-            className="absolute left-0 top-0 cursor-pointer rounded-[50%] outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+            className="absolute left-0 top-0 cursor-pointer rounded-[50%] outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-ring"
             style={{ width: g.d, height: g.d * TILT, visibility: lifted === i ? "hidden" : undefined }}
             onFocus={() => { if (pointer.current.id < 0) { stop(); setActive(i); } }}
             onClick={(event) => { const pending = pendingOpen.current; pendingOpen.current = -1; if (event.detail === 0 || pending === i) open(i); }}
@@ -1059,11 +1059,11 @@ function DishDialog({ uid, item, index, total, labels, reduced, broken, source, 
   };
 
   return createPortal(
-    <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} data-dish-dialog className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4 text-foreground sm:p-8" onKeyDown={onKeyDown}>
+    <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} data-dish-dialog className="fixed inset-0 z-50 flex overflow-y-auto p-4 text-foreground sm:p-8" onKeyDown={onKeyDown}>
       <div aria-hidden="true" className={`absolute inset-0 bg-background/80 backdrop-blur-md transition-opacity duration-300 motion-reduce:transition-none ${shown ? "opacity-100" : "opacity-0"}`} onClick={dismiss} />
-      <div className="relative grid w-full max-w-[52rem] items-center gap-6 p-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,19rem)] sm:gap-10 sm:p-8">
+      <div className="relative m-auto grid w-full max-w-[52rem] items-center gap-6 p-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,19rem)] sm:gap-10 sm:p-8">
         <div aria-hidden="true" className={`absolute inset-0 rounded-[2rem] border border-border bg-card shadow-2xl transition-[opacity,scale] duration-300 motion-reduce:transition-none ${shown ? "scale-100 opacity-100" : "scale-[0.97] opacity-0"}`} />
-        <button ref={closeRef} type="button" onClick={dismiss} className={`absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground outline-none transition-[opacity,color] duration-300 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none ${shown ? "opacity-100" : "opacity-0"}`}>
+        <button ref={closeRef} type="button" onClick={dismiss} className={`absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 pointer-coarse:min-h-11 text-xs font-medium text-muted-foreground outline-none transition-[opacity,color] duration-300 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none ${shown ? "opacity-100" : "opacity-0"}`}>
           {labels.close}
           <svg aria-hidden="true" viewBox="0 0 16 16" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" /></svg>
         </button>
@@ -1099,7 +1099,7 @@ function DishDialog({ uid, item, index, total, labels, reduced, broken, source, 
           )}
           <div className="mt-2 flex flex-wrap items-center justify-center gap-4 sm:justify-start">
             <p className="text-2xl font-semibold tabular-nums tracking-tight">{item.price}</p>
-            <button type="button" data-add onClick={add} className="inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background shadow-sm outline-none transition-[translate,box-shadow] hover:-translate-y-px hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none">
+            <button type="button" data-add onClick={add} className="inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 pointer-coarse:min-h-11 text-sm font-medium text-background shadow-sm outline-none transition-[translate,box-shadow] hover:-translate-y-px hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none">
               {added
                 ? <svg aria-hidden="true" viewBox="0 0 16 16" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M3.5 8.5l3 3 6-7" /></svg>
                 : <svg aria-hidden="true" viewBox="0 0 16 16" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M8 3.5v9M3.5 8h9" /></svg>}

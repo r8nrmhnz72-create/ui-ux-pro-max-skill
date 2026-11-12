@@ -18,9 +18,32 @@ export interface InteractiveHoverLinksProps extends Omit<React.ComponentProps<"n
   links: InteractiveLink[];
   /** Called when a link is activated, before the browser follows it (e.g. to close an overlay menu). */
   onNavigate?: (link: InteractiveLink, event: React.MouseEvent<HTMLAnchorElement>) => void;
-  /** Heading scale: `lg` is the original display size, `md` suits secondary navigation such as a footer. */
-  size?: "md" | "lg";
+  /**
+   * Heading scale: `lg` is the original display size, `md` suits secondary navigation such as a
+   * footer, and `fit` scales rows with the viewport height so a full-screen menu fits without scrolling.
+   */
+  size?: LinkSize;
 }
+
+type LinkSize = "md" | "lg" | "fit";
+
+const ROW: Record<LinkSize, string> = {
+  lg: "py-4 md:py-8",
+  md: "py-3 md:py-5",
+  fit: "py-4 md:py-[clamp(0.375rem,1.9vh,2rem)]",
+};
+
+const HEADING: Record<LinkSize, string> = {
+  lg: "text-4xl md:text-6xl",
+  md: "text-3xl md:text-5xl",
+  fit: "text-4xl md:text-[length:clamp(1.875rem,6vh,3.75rem)] md:leading-none",
+};
+
+const PICTURE: Record<LinkSize, string> = {
+  lg: "hidden h-24 w-32 sm:block md:h-48 md:w-64",
+  md: "hidden h-24 w-32 sm:block md:h-48 md:w-64",
+  fit: "hidden h-24 w-32 sm:block md:h-[clamp(7rem,21vh,12rem)] md:w-[clamp(9.33rem,28vh,16rem)]",
+};
 
 export function InteractiveHoverLinks({ links, onNavigate, size = "lg", className, ...rest }: InteractiveHoverLinksProps) {
   return (
@@ -38,7 +61,7 @@ export function InteractiveHoverLinks({ links, onNavigate, size = "lg", classNam
 
 function HoverLink({ link, size, onNavigate }: {
   link: InteractiveLink;
-  size: "md" | "lg";
+  size: LinkSize;
   onNavigate?: InteractiveHoverLinksProps["onNavigate"];
 }) {
   const { heading, subheading, imgSrc, href } = link;
@@ -79,7 +102,7 @@ function HoverLink({ link, size, onNavigate }: {
       whileFocus="whileHover"
       className={cn(
         "group relative flex items-center justify-between border-b-2 border-muted outline-none transition-colors duration-500 hover:border-foreground focus-visible:border-foreground",
-        size === "lg" ? "py-4 md:py-8" : "py-3 md:py-5",
+        ROW[size],
       )}
     >
       <div className="min-w-0">
@@ -95,7 +118,7 @@ function HoverLink({ link, size, onNavigate }: {
           }}
           className={cn(
             "relative z-10 block font-bold text-muted-foreground transition-colors duration-500 group-hover:text-foreground group-focus-visible:text-foreground",
-            size === "lg" ? "text-4xl md:text-6xl" : "text-3xl md:text-5xl",
+            HEADING[size],
           )}
         >
           <span className="sr-only">{heading}</span>
@@ -138,7 +161,7 @@ function HoverLink({ link, size, onNavigate }: {
         loading="lazy"
         decoding="async"
         draggable={false}
-        className="pointer-events-none absolute z-0 h-24 w-32 rounded-lg object-cover shadow-lg md:h-48 md:w-64"
+        className={cn("pointer-events-none absolute z-0 rounded-lg object-cover shadow-lg", PICTURE[size])}
       />
       <div className="shrink-0 overflow-hidden">
         <motion.div
@@ -155,7 +178,7 @@ function HoverLink({ link, size, onNavigate }: {
           transition={reduced ? { duration: 0.15 } : { type: "spring" }}
           className="relative z-10 p-4"
         >
-          <ArrowRight aria-hidden="true" className={cn("text-foreground", size === "lg" ? "size-8 md:size-12" : "size-7 md:size-10")} />
+          <ArrowRight aria-hidden="true" className={cn("text-foreground", size === "md" ? "size-7 md:size-10" : "size-8 md:size-12")} />
         </motion.div>
       </div>
     </motion.a>

@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Eyebrow } from "@/components/site/section";
 import { buttonVariants } from "@/components/ui/button";
 import { site } from "@/content/site";
+
+export const metadata: Metadata = { title: site.notFound.title };
 
 export default function NotFound() {
   const copy = site.notFound;

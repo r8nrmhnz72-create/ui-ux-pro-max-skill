@@ -6,7 +6,7 @@ import { InteractiveHoverLinks } from "@/components/ui/interactive-hover-links";
 import { site } from "@/content/site";
 
 const link =
-  "rounded-sm underline-offset-4 outline-none transition-colors duration-200 hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring";
+  "inline-flex min-h-11 items-center rounded-sm underline-offset-4 outline-none transition-colors duration-200 hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring";
 
 export function SiteFooter() {
   const { footer, contact } = site;
@@ -21,7 +21,7 @@ export function SiteFooter() {
             <Logo />
             <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">{footer.tagline}</p>
           </div>
-          <ul className="flex flex-col gap-2 text-sm text-muted-foreground md:items-end">
+          <ul className="flex flex-col text-sm text-muted-foreground md:items-end">
             <li>
               <a href={`mailto:${contact.email}`} className={link}>
                 {contact.email}
@@ -34,11 +34,11 @@ export function SiteFooter() {
                 </a>
               </li>
             )}
-            {contact.businessId && <li className="tabular-nums">{contact.businessId}</li>}
+            {contact.businessId && <li className="flex min-h-11 items-center tabular-nums">{contact.businessId}</li>}
           </ul>
         </div>
 
-        <div className="mt-10 flex flex-col gap-3 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-10 flex flex-col gap-1 border-t border-border pt-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {site.name}. {footer.rights}
           </p>

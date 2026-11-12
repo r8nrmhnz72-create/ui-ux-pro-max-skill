@@ -25,7 +25,7 @@ export function Hero() {
       />
 
       <div className="relative mx-auto w-full max-w-7xl px-4 pb-14 pt-32 md:px-8 lg:px-10 md:pb-20">
-        <Eyebrow className="flex items-center gap-3">
+        <Eyebrow className="text-halo flex items-center gap-3">
           <span aria-hidden="true" className="h-px w-8 bg-highlight" />
           {hero.eyebrow}
         </Eyebrow>
@@ -38,7 +38,7 @@ export function Hero() {
           <em className="block font-serif font-normal italic tracking-[-0.01em] text-highlight">{hero.title.emphasis}</em>
         </h1>
 
-        <p className="mt-7 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">{hero.lead}</p>
+        <p className="text-halo mt-7 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">{hero.lead}</p>
 
         <div className="mt-9 flex flex-wrap items-center gap-3">
           <a href={hero.primaryCta.href} className={cn(buttonVariants({ variant: "accent", size: "lg" }), "group")}>
@@ -51,7 +51,7 @@ export function Hero() {
           </a>
         </div>
 
-        <dl className="mt-14 grid max-w-2xl grid-cols-3 gap-x-6 border-t border-border pt-6 md:mt-20">
+        <dl className="text-halo mt-14 grid max-w-2xl grid-cols-3 gap-x-6 border-t border-border pt-6 md:mt-20">
           {hero.facts.map((fact) => (
             <div key={fact.label} className="flex flex-col-reverse justify-end gap-1.5">
               <dt className="text-xs leading-snug text-muted-foreground md:text-sm">{fact.label}</dt>

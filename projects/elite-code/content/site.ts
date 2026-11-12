@@ -364,6 +364,9 @@ export const site = {
       title: "Viimeistele lähetys sähköpostissa",
       text: "Avasimme viestisi sähköpostiohjelmaasi. Lähetä se sieltä, niin pyyntö tulee perille. Jos ohjelma ei auennut, kirjoita meille osoitteeseen",
       retry: "Avaa sähköposti uudelleen",
+      back: "Takaisin lomakkeelle",
+      copy: "Kopioi viesti",
+      copied: "Viesti kopioitu",
     },
     failure: "Lähetys ei onnistunut. Yritä hetken kuluttua uudelleen tai kirjoita meille suoraan osoitteeseen",
     busy: "Lähetyksiä on tullut lyhyessä ajassa liian monta. Odota hetki tai kirjoita meille suoraan osoitteeseen",
@@ -416,6 +419,7 @@ export const site = {
   },
 
   notFound: {
+    title: "Sivua ei löytynyt",
     eyebrow: "404",
     heading: "Tätä sivua ei löytynyt.",
     text: "Osoite on voinut muuttua tai sivu on poistettu. Etusivulta löydät sivumallit ja tarjouspyynnön.",

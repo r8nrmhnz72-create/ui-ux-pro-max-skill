@@ -1,9 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <!-- Elite Code mark: two code chevrons closing into a cut gem. Drawn a little heavier than the
-       logo (stroke 2.3 on a 32 grid) so it holds together at 16 px. -->
+  <!-- Elite Code mark: two code chevrons closing into a cut gem.
+       Redrawn for the favicon, not scaled from the logo: 20 units from tip to tip, and every
+       point on an even coordinate, so that at 16 px each 45° stroke runs through pixel centres
+       and stays one clean pixel wide. Move a point by an odd amount and the strokes blur. -->
   <rect width="32" height="32" rx="7" fill="#0A0A0B"/>
-  <g fill="none" stroke="#E3B341" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M14.35 9.3 7.65 16l6.7 6.7"/>
-    <path d="M17.65 9.3 24.35 16l-6.7 6.7"/>
+  <g fill="none" stroke="#E3B341" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 8 6 16l8 8"/>
+    <path d="M18 8l8 8-8 8"/>
   </g>
 </svg>

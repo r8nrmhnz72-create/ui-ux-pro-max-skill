@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
 import { InteractiveHoverLinks, type InteractiveLink } from "@/components/ui/interactive-hover-links";
@@ -32,6 +33,7 @@ export function SiteHeader({ links, cta, contact, labels }: SiteHeaderProps) {
   const toggleRef = React.useRef<HTMLButtonElement>(null);
   const menuRef = React.useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
+  const pathname = usePathname();
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -78,7 +80,11 @@ export function SiteHeader({ links, cta, contact, labels }: SiteHeaderProps) {
           <Link
             href="/"
             aria-label={labels.home}
-            onClick={open ? leave : undefined}
+            onClick={() => {
+              if (open) leave();
+              // Already on the home page: the router has nowhere to go, so take the visitor back up.
+              if (pathname === "/") window.scrollTo({ top: 0 });
+            }}
             className="rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background"
           >
             <Logo />
@@ -100,9 +106,11 @@ export function SiteHeader({ links, cta, contact, labels }: SiteHeaderProps) {
               aria-controls={MENU_ID}
               aria-label={open ? labels.close : labels.open}
               onClick={() => setOpen((value) => !value)}
-              className="group inline-flex h-11 cursor-pointer items-center gap-3 rounded-full border border-border bg-background/60 pl-5 pr-4 text-sm font-medium outline-none backdrop-blur-sm transition-colors duration-200 hover:border-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              className="group inline-flex h-11 cursor-pointer items-center gap-3 rounded-full border border-border bg-background/60 pl-5 pr-4 max-[359px]:px-3.5 text-sm font-medium outline-none backdrop-blur-sm transition-colors duration-200 hover:border-foreground focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <span aria-hidden="true">{open ? labels.close.split(" ")[0] : labels.menu}</span>
+              <span aria-hidden="true" className="max-[359px]:hidden">
+                {open ? labels.close.split(" ")[0] : labels.menu}
+              </span>
               <span aria-hidden="true" className="relative block h-3 w-5">
                 <span
                   className={cn(
@@ -139,19 +147,22 @@ export function SiteHeader({ links, cta, contact, labels }: SiteHeaderProps) {
                 aria-label={labels.navigation}
                 links={links}
                 onNavigate={leave}
-                className="mx-auto flex max-w-5xl flex-1 flex-col justify-center py-4"
+                size="fit"
+                // Head room on larger screens: the first row's hover picture pops out above the row
+                // and would otherwise slide under the header bar.
+                className="mx-auto flex max-w-5xl flex-1 flex-col justify-center py-4 md:pt-[clamp(1.5rem,5vh,3.5rem)]"
               />
-              <div className="mx-auto flex w-full max-w-5xl flex-col gap-2 pt-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+              <div className="mx-auto flex w-full max-w-5xl flex-col pt-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
                 <a
                   href={`mailto:${contact.email}`}
-                  className="rounded-sm underline-offset-4 outline-none transition-colors hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+                  className="inline-flex min-h-11 items-center rounded-sm underline-offset-4 outline-none transition-colors hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {contact.email}
                 </a>
                 {contact.phone && (
                   <a
                     href={`tel:${contact.phone.replace(/[^\d+]/g, "")}`}
-                    className="rounded-sm tabular-nums underline-offset-4 outline-none transition-colors hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+                    className="inline-flex min-h-11 items-center rounded-sm tabular-nums underline-offset-4 outline-none transition-colors hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     {contact.phone}
                   </a>

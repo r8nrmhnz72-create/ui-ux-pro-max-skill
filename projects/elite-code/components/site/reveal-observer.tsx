@@ -13,6 +13,8 @@ export function RevealObserver() {
   const pathname = usePathname();
 
   React.useEffect(() => {
+    // Tells the boot script's failsafe that reveals are being handled (see app/layout.tsx).
+    document.documentElement.setAttribute("data-reveal-ready", "");
     const nodes = document.querySelectorAll<HTMLElement>("[data-reveal]:not([data-revealed])");
     if (nodes.length === 0) return;
     if (typeof IntersectionObserver !== "function") {

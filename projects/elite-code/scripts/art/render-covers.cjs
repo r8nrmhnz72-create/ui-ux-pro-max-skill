@@ -33,6 +33,8 @@ const C = {
   white: "#F5F4F0",
   gold: "#E3B341",
   goldInk: "#1A1405",
+  /** Gold for type on a light field, where the brand gold is too pale to read. */
+  goldDeep: "#B8871C",
   border: "#2A2A2E",
   mute: "#A8A7A0",
 };
@@ -71,7 +73,10 @@ function doc(width, height, css, body) {
  * every object drops a soft shadow down and to the right.
  * One edge for all five: see `edge` below.
  * The fields alternate so that neighbours in the menu never look alike:
- * charcoal, gold, charcoal with dots, warm white, near-black with a warm glow.
+ * charcoal, gold, charcoal with dots, warm stone, near-black with a warm glow.
+ * The light always lies on the field, under the subject, so nothing white is greyed by the falloff.
+ * No field is as dark as the page (#0A0A0B) or as light as the paper (#FAF9F6): each cover has to
+ * keep its outline on both.
  */
 
 const W = 640;
@@ -90,8 +95,10 @@ function light({ glow = 0.1, shade = 0.34, tone = "0,0,0", glowTone = "255,255,2
  */
 const edge = (tone, alpha) =>
   `<div class="abs" style="inset:0;border-radius:20px;box-shadow:inset 0 0 0 2.5px rgba(${tone},${alpha})"></div>`;
-const EDGE_ON_DARK = edge("255,255,255", 0.1);
+const EDGE_ON_DARK = edge("255,255,255", 0.13);
 const EDGE_ON_LIGHT = edge("10,10,11", 0.12);
+/** The stone field is close to the light theme's paper, so its edge is drawn firmer. */
+const EDGE_ON_STONE = edge("10,10,11", 0.2);
 
 /* 01 — Sivumallit: plates on the belt, seen from above. */
 function coverSivumallit() {
@@ -325,10 +332,10 @@ function coverPalvelu() {
 /* 03 — Prosessi: four numbered stops on a flowing path, the last one gold. */
 function coverProsessi() {
   const nodes = [
-    { x: 104, y: 330, r: 41 },
-    { x: 252, y: 174, r: 41 },
-    { x: 398, y: 326, r: 41 },
-    { x: 528, y: 166, r: 53 },
+    { x: 104, y: 330, r: 45 },
+    { x: 252, y: 174, r: 45 },
+    { x: 398, y: 326, r: 45 },
+    { x: 528, y: 166, r: 56 },
   ];
   // Stops sit on the crests and troughs, so the path passes through each one level.
   const leg = (a, b) => {
@@ -339,14 +346,15 @@ function coverProsessi() {
   const d = start + leg(nodes[0], nodes[1]) + leg(nodes[1], nodes[2]) + leg(nodes[2], nodes[3]);
   const leadIn = `M-14 238C34 238 40 ${nodes[0].y} ${nodes[0].x} ${nodes[0].y}`;
   const last = nodes[3];
-  const css = `.stage{background:#18181B} text{font-family:"Geist Mono",monospace;font-weight:500;text-anchor:middle;dominant-baseline:central}`;
-  const svg = `
-    <svg class="abs" xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="inset:0">
+  const PATH = 7; // 2.8 px at the 256 px display size, 1.4 px at 128 px
+  const css = `.stage{background:#1D1D21} text{font-family:"Geist Mono",monospace;font-weight:500;text-anchor:middle;dominant-baseline:central}`;
+  const layer = (content) =>
+    `<svg class="abs" xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="inset:0">${content}</svg>`;
+  // The field: a sparse dot grid, and a denser one that shows only in the path's wake.
+  const ground = layer(`
       <defs>
         <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="8" cy="8" r="1.3" fill="${C.white}"/></pattern>
         <pattern id="fine" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="8" cy="8" r="1.7" fill="${C.white}"/></pattern>
-        <filter id="blur9" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="8"/></filter>
-        <filter id="blur4" x="-10%" y="-40%" width="120%" height="180%"><feGaussianBlur stdDeviation="5"/></filter>
         <filter id="blur26" x="-30%" y="-80%" width="160%" height="260%"><feGaussianBlur stdDeviation="24"/></filter>
         <!-- The wake: a soft band that hangs below the path. The dots of the site's hero wave show through it. -->
         <mask id="wake" maskUnits="userSpaceOnUse" x="0" y="0" width="${W}" height="${H}">
@@ -354,17 +362,23 @@ function coverProsessi() {
             <path d="${leadIn}" stroke-opacity=".5"/><path d="${d}"/>
           </g>
         </mask>
+      </defs>
+      <rect width="${W}" height="${H}" fill="url(#grid)" opacity=".11"/>
+      <rect width="${W}" height="${H}" fill="url(#fine)" opacity=".5" mask="url(#wake)"/>`);
+  // The subject, drawn over the light so that all three white stops are the same white.
+  const subject = layer(`
+      <defs>
+        <filter id="blur9" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="8"/></filter>
+        <filter id="blur4" x="-10%" y="-40%" width="120%" height="180%"><feGaussianBlur stdDeviation="5"/></filter>
         <linearGradient id="arrive" gradientUnits="userSpaceOnUse" x1="${nodes[2].x}" y1="0" x2="${last.x}" y2="0">
           <stop offset=".1" stop-color="${C.white}"/><stop offset=".9" stop-color="${C.gold}"/>
         </linearGradient>
       </defs>
-      <rect width="${W}" height="${H}" fill="url(#grid)" opacity=".11"/>
-      <rect width="${W}" height="${H}" fill="url(#fine)" opacity=".5" mask="url(#wake)"/>
       <g fill="none" stroke-linecap="round">
-        <path d="${d}" transform="translate(7 12)" stroke="#000" stroke-opacity=".5" stroke-width="7" filter="url(#blur4)"/>
-        <path d="${leadIn}" stroke="${C.white}" stroke-opacity=".6" stroke-width="5" stroke-dasharray="1 13"/>
-        <path d="${d}" stroke="${C.white}" stroke-width="5.5"/>
-        <path d="M${nodes[2].x} ${nodes[2].y}${leg(nodes[2], last)}" stroke="url(#arrive)" stroke-width="5.5"/>
+        <path d="${d}" transform="translate(7 12)" stroke="#000" stroke-opacity=".5" stroke-width="${PATH + 1.5}" filter="url(#blur4)"/>
+        <path d="${leadIn}" stroke="${C.white}" stroke-opacity=".6" stroke-width="${PATH - 0.5}" stroke-dasharray="1 13"/>
+        <path d="${d}" stroke="${C.white}" stroke-width="${PATH}"/>
+        <path d="M${nodes[2].x} ${nodes[2].y}${leg(nodes[2], last)}" stroke="url(#arrive)" stroke-width="${PATH}"/>
       </g>
       <circle cx="${last.x}" cy="${last.y}" r="${last.r + 15}" fill="none" stroke="${C.gold}" stroke-opacity=".55" stroke-width="2"/>
       <circle cx="${last.x}" cy="${last.y}" r="${last.r + 31}" fill="none" stroke="${C.gold}" stroke-opacity=".24" stroke-width="2"/>
@@ -374,20 +388,19 @@ function coverProsessi() {
           return `
       <circle cx="${n.x + 8}" cy="${n.y + 14}" r="${n.r}" fill="#000" opacity=".6" filter="url(#blur9)"/>
       <circle cx="${n.x}" cy="${n.y}" r="${n.r}" fill="${gold ? C.gold : C.white}"/>
-      <text x="${n.x}" y="${n.y + 1}" font-size="${gold ? 40 : 32}" fill="${gold ? C.goldInk : C.ink}" letter-spacing="-.5">0${i + 1}</text>`;
+      <text x="${n.x}" y="${n.y + 1}" font-size="${gold ? 42 : 35}" fill="${gold ? C.goldInk : C.ink}" letter-spacing="-.5">0${i + 1}</text>`;
         })
-        .join("")}
-    </svg>`;
-  return doc(W, H, css, `${svg}${light({ glow: 0.08, shade: 0.4 })}${EDGE_ON_DARK}`);
+        .join("")}`);
+  return doc(W, H, css, `${ground}${light({ glow: 0.1, shade: 0.4 })}${subject}${EDGE_ON_DARK}`);
 }
 
 /* 04 — Hinnasto: the starting price, set large, over the five tier plates. */
 function coverHinnasto() {
   const css = `
-    .stage{background:#F0EDE5;color:${C.ink}}
+    .stage{background:#E9E5DA;color:${C.ink}}
     .label{left:46px;top:40px;font-size:29px;color:#5A5953}
     .price{left:37px;top:68px;font-weight:600;font-size:236px;line-height:1;letter-spacing:-.055em;white-space:nowrap}
-    .price .eur{font-size:228px;letter-spacing:0;margin-left:.085em;color:${C.gold}}
+    .price .eur{font-size:228px;letter-spacing:0;margin-left:.085em;color:${C.goldDeep}}
     .rule{left:46px;right:46px;top:322px;height:2px;background:${C.ink};opacity:.14}
   `;
   const r = 30;
@@ -402,7 +415,7 @@ function coverHinnasto() {
       ${i === 0 ? `<circle cx="${x}" cy="${cy}" r="8.5" fill="${C.ink}"/>` : ""}`;
   }).join("");
   const body = `
-    ${light({ glow: 0.85, glowTone: "255,255,255", shade: 0.2, tone: "120,96,40" })}
+    ${light({ glow: 0.45, glowTone: "255,255,255", shade: 0.2, tone: "120,96,40" })}
     <div class="abs mono label">Alkaen</div>
     <div class="abs price">690<span class="serif eur">€</span></div>
     <div class="abs rule"></div>
@@ -415,14 +428,14 @@ function coverHinnasto() {
       </defs>
       ${rings}
     </svg>
-    ${EDGE_ON_LIGHT}`;
+    ${EDGE_ON_STONE}`;
   return doc(W, H, css, body);
 }
 
 /* 05 — Tarjous: the request card, and the request on its way. */
 function coverTarjous() {
   const css = `
-    .stage{background:#131316}
+    .stage{background:#19191C}
     .card{left:52px;top:120px;width:306px;height:262px;border-radius:18px;background:${C.white};transform:rotate(-7deg);padding:24px 26px;color:${C.ink};
       box-shadow:16px 28px 38px rgba(0,0,0,.6),3px 6px 9px rgba(0,0,0,.4)}
     .title{font-size:50px;line-height:1}
@@ -431,10 +444,10 @@ function coverTarjous() {
     .send{position:absolute;right:26px;bottom:24px;height:50px;padding:0 20px 0 22px;border-radius:25px;background:${C.gold};color:${C.goldInk};font-weight:600;font-size:27px;letter-spacing:-.01em;display:flex;align-items:center;gap:9px}
   `;
   const body = `
-    <div class="abs" style="inset:0;background:radial-gradient(64% 76% at 86% 10%, rgba(227,179,65,.17) 0%, rgba(227,179,65,0) 72%)"></div>
-    ${light({ glow: 0.07, shade: 0.4 })}
+    <div class="abs" style="inset:0;background:radial-gradient(64% 76% at 86% 10%, rgba(227,179,65,.26) 0%, rgba(227,179,65,0) 72%)"></div>
+    ${light({ glow: 0.09, shade: 0.4 })}
     <svg class="abs" style="inset:0" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-      <path d="M340 354C448 374 524 306 506 226" fill="none" stroke="${C.gold}" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 15"/>
+      <path d="M340 354C448 374 524 306 506 226" fill="none" stroke="${C.gold}" stroke-width="6" stroke-linecap="round" stroke-dasharray="1 15"/>
     </svg>
     <div class="abs card">
       <div style="display:flex;align-items:center;justify-content:space-between">
@@ -472,6 +485,11 @@ const OG_H = 630;
 /**
  * The hero's particle wave as a still: a grid of points on a rolling surface, seen from just
  * above it. Runs inside the page and paints straight onto a canvas. No randomness.
+ *
+ * The surface is treated as solid. Rows are walked from the viewer outwards while a skyline keeps,
+ * for every screen column, the highest point reached so far; a dot that falls below it lies behind
+ * a nearer crest and is left out. Without this the far slopes show through the near ones and the
+ * dots pile up into bright clumps along the crests.
  */
 function paintWave(canvas, o) {
   const ctx = canvas.getContext("2d");
@@ -482,12 +500,25 @@ function paintWave(canvas, o) {
     o.swell * Math.sin(0.34 * x + 0.21 * z + 0.9) +
     o.swell * 0.62 * Math.sin(0.17 * z - 0.27 * x + 2.2) +
     o.swell * 0.3 * Math.sin(0.71 * x + 0.09 * z + 4.1);
-  // Far rows first, so nearer dots sit on top.
-  for (let z = o.far; z >= o.near; z -= o.gapZ) {
+
+  const CELL = 2; // width of a skyline column, px
+  const PAD = 16; // the skyline runs this far past both edges
+  const columns = Math.ceil((o.width + 2 * PAD) / CELL) + 1;
+  const skyline = new Float32Array(columns).fill(Infinity);
+  const column = (px) => Math.round((px + PAD) / CELL);
+
+  const dots = [];
+  for (let z = o.near; z <= o.far; z += o.gapZ) {
+    const row = [];
     for (let x = -o.span; x <= o.span; x += o.gapX) {
       const y = height(x, z);
-      const px = o.width / 2 + ((x + 0.5 * Math.sin(y * 2 + z * 0.4)) * o.focal) / z;
-      const py = o.horizon + ((o.eye - y) * o.focal) / z;
+      row.push({
+        y,
+        px: o.width / 2 + ((x + 0.5 * Math.sin(y * 2 + z * 0.4)) * o.focal) / z,
+        py: o.horizon + ((o.eye - y) * o.focal) / z,
+      });
+    }
+    for (const { y, px, py } of row) {
       if (px < -8 || px > o.width + 8 || py > o.height + 8) continue;
       const lift = (y / (o.swell * 1.92) + 1) / 2; // 0 in the troughs, 1 on the crests
       let radius = ((o.dot * (0.55 + 0.75 * lift)) * o.focal) / z;
@@ -500,12 +531,32 @@ function paintWave(canvas, o) {
       }
       // Keep the copy clear: dots fade out as they climb towards it.
       alpha *= Math.min(1, Math.max(0, (py - o.clearTop) / (o.clearBottom - o.clearTop)));
+      // Behind a nearer crest: gone within a few pixels of the skyline.
+      const hidden = py - skyline[Math.min(columns - 1, Math.max(0, column(px)))];
+      if (hidden > 0) alpha *= Math.max(0, 1 - hidden / o.fade);
       if (alpha < 0.012) continue;
-      ctx.globalAlpha = alpha;
-      ctx.beginPath();
-      ctx.arc(px, py, radius, 0, Math.PI * 2);
-      ctx.fill();
+      dots.push({ px, py, radius, alpha });
     }
+    // Raise the skyline to this row.
+    for (let i = 1; i < row.length; i++) {
+      const a = row[i - 1];
+      const b = row[i];
+      if (b.px < -PAD || a.px > o.width + PAD) continue;
+      const first = Math.max(0, column(a.px));
+      const last = Math.min(columns - 1, column(b.px));
+      for (let c = first; c <= last; c++) {
+        const py = last === first ? a.py : a.py + ((b.py - a.py) * (c - first)) / (last - first);
+        if (py < skyline[c]) skyline[c] = py;
+      }
+    }
+  }
+  // Far dots first, so nearer ones sit on top.
+  for (let i = dots.length - 1; i >= 0; i--) {
+    const { px, py, radius, alpha } = dots[i];
+    ctx.globalAlpha = alpha;
+    ctx.beginPath();
+    ctx.arc(px, py, radius, 0, Math.PI * 2);
+    ctx.fill();
   }
 }
 
@@ -527,6 +578,7 @@ function ogImage() {
     min: 0.55,
     opacity: 0.95,
     haze: 0.82,
+    fade: 3,
     clearTop: 430,
     clearBottom: 496,
   };
@@ -553,8 +605,9 @@ function ogImage() {
 /* ───────────────────────── touch icon (180 × 180) ───────────────────────── */
 
 function appleIcon() {
-  // Full bleed: iOS rounds the corners itself. Same mark as app/icon.svg, a touch larger and
-  // lighter because it is never shown as small as a favicon.
+  // Full bleed: iOS rounds the corners itself. The same mark as app/icon.svg at 7/8 of its size
+  // (17.5 units from tip to tip instead of 20): a home-screen icon is never shown as small as a
+  // favicon, so it can afford more air around the mark.
   const body = `<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 32 32">
     <rect width="32" height="32" fill="${C.ink}"/>
     <g fill="none" stroke="${C.gold}" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
@@ -625,7 +678,12 @@ async function main() {
   console.log(report.join("\n"));
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}
+
+// For trying out a variant from another script without writing any files.
+module.exports = { C, TIER, W, H, OG_W, OG_H, doc, mark, light, edge, render, COVERS, ogImage, appleIcon };
